@@ -17,9 +17,9 @@ start_game :-
     % Gestisci il cambiamento di colore quando il bottone è selezionato
    % send(Button, message(Button, change_button_color, green)), % Colore quando selezionato
    % send(Button, message(Button, change_button_color, grey), up), % Colore quando non selezionato
-    get(Bitmap,size,size(Pw,_)),
+    get(Bitmap,size,size(Iw,_)),
     get(Button,size,size(Bw,_)),
-    Ximage is (W-Pw)/2, % per centrare
+    Ximage is (W-Iw)/2, % per centrare
     Xbutton is (W-Bw)/2,
     send(@dialog, display, Bitmap, point(Ximage,10)),
     send(@dialog, display, Button, point(Xbutton,500)),

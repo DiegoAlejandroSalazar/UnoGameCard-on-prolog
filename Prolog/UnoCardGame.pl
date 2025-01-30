@@ -11,7 +11,7 @@ card(9, red).
 card(0, red).
 card(+2, red).
 card(stop, red).
-card(revers, red).
+
 
 card(1,green).
 card(2, green).
@@ -25,7 +25,6 @@ card(9, green).
 card(0, green).
 card(+2, green).
 card(stop, green).
-card(revers, green).
 
 card(1,blue).
 card(2, blue).
@@ -39,7 +38,6 @@ card(9, blue).
 card(0, blue).
 card(+2, blue).
 card(stop, blue).
-card(revers, blue).
 
 card(1,yellow).
 card(2, yellow).
@@ -53,7 +51,6 @@ card(9, yellow).
 card(0, yellow).
 card(+2, yellow).
 card(stop, yellow).
-card(revers, yellow).
 
 % Funzione per ottenere lista di carte
 lista_carte(CardList) :-
@@ -104,7 +101,7 @@ value(9).
 value(0).
 value(+2).
 value(stop).
-value(reverse).
+
 
 %definizione colore delle carte
 color(red).

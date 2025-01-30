@@ -84,7 +84,7 @@ gioca_carta(ManoGiocatore1,Carta_Giocata) :-
   write('Carte nella tua mano: '),nl,write(ManoGiocatore1),nl, write('Scegli carta da giocare  ( tipo card(3,red))'),nl,
   read(Carta_Giocata),
   (
-      member(Carta_iocata, ManoGiocatore1) % if da levare che tanto inutile se si usa la grafica
+      member(Carta_Giocata, ManoGiocatore1) % if da levare che tanto inutile se si usa la grafica
       -> write('Hai scelto di giocare: '), write(Carta_Giocata), nl
       ;  write('Carta non valida! Riprova.'), nl,
       gioca_carta(ManoGiocatore1, Carta_Giocata)

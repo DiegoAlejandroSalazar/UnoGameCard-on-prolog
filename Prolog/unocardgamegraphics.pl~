@@ -15,8 +15,8 @@ start_game :-
     send(Button, size, size(450, 100)), % Imposta la dimensione del bottone
     send(Button, font, font(helvetica, bold, 30)), % Modifica il font del bottone
     % Gestisci il cambiamento di colore quando il bottone è selezionato
-    send(Button, message(Button, change_button_color, green)), % Colore quando selezionato
-    send(Button, message(Button, change_button_color, grey), up), % Colore quando non selezionato
+   % send(Button, message(Button, change_button_color, green)), % Colore quando selezionato
+   % send(Button, message(Button, change_button_color, grey), up), % Colore quando non selezionato
     get(Bitmap,size,size(Pw,_)),
     get(Button,size,size(Bw,_)),
     Ximage is (W-Pw)/2, % per centrare
