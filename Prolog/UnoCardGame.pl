@@ -12,6 +12,19 @@ card(0, red).
 card(+2, red).
 card(stop, red).
 
+card(1,red2).
+card(2, red2).
+card(3, red2).
+card(4, red2).
+card(5, red2).
+card(6, red2).
+card(7, red2).
+card(8, red2).
+card(9, red2).
+card(0, red2).
+card(+2, red2).
+card(stop, red2).
+
 
 card(1,green).
 card(2, green).
@@ -26,6 +39,20 @@ card(0, green).
 card(+2, green).
 card(stop, green).
 
+card(1,green2).
+card(2, green2).
+card(3, green2).
+card(4, green2).
+card(5, green2).
+card(6, green2).
+card(7, green2).
+card(8, green2).
+card(9, green2).
+card(0, green2).
+card(+2, green2).
+card(stop, green2).
+
+
 card(1,blue).
 card(2, blue).
 card(3, blue).
@@ -39,6 +66,19 @@ card(0, blue).
 card(+2, blue).
 card(stop, blue).
 
+card(1,blue2).
+card(2, blue2).
+card(3, blue2).
+card(4, blue2).
+card(5, blue2).
+card(6, blue2).
+card(7, blue2).
+card(8, blue2).
+card(9, blue2).
+card(0, blue2).
+card(+2, blue2).
+card(stop, blue2).
+
 card(1,yellow).
 card(2, yellow).
 card(3, yellow).
@@ -51,6 +91,20 @@ card(9, yellow).
 card(0, yellow).
 card(+2, yellow).
 card(stop, yellow).
+
+card(1,yellow2).
+card(2, yellow2).
+card(3, yellow2).
+card(4, yellow2).
+card(5, yellow2).
+card(6, yellow2).
+card(7, yellow2).
+card(8, yellow2).
+card(9, yellow2).
+card(0, yellow2).
+card(+2, yellow2).
+card(stop, yellow2).
+
 
 % Variabili dinamiche
 :-dynamic mazzo/1.
@@ -197,8 +251,6 @@ gioca_carta :-
       gioca_carta
    ).
 
-
-
 % Definizione valori delle carte
 value(1).
 value(2).
@@ -216,8 +268,12 @@ value(stop).
 
 %definizione colore delle carte
 color(red).
+color(red2).
 color(green).
+color(green2).
 color(blue).
+color(blue2).
 color(yellow).
+color(yellow2).
 
 
