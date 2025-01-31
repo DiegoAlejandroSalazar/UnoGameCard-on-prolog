@@ -122,9 +122,10 @@ carta_valida(card(ValoreGiocato, ColoreGiocato), card(ValorePrima, ColorePrima))
 
 
 % Se è una carta blocco o + 2 attiva l'effetto
-usa_carta(card(ValoreGiocato, _)):-
+attiva_effetto(card(ValoreGiocato, _)):-
     (   ValoreGiocato == +2
-    ->  write('+2 carte pescate')
+    ->  write('+2 carte pescate'),
+        pesca_carte(2)
     ;
         (   ValoreGiocato == stop
         ->  write('stop turno')
@@ -134,18 +135,25 @@ usa_carta(card(ValoreGiocato, _)):-
     ).
 
 % Pesca una carta dal mazzo e la mette nella mano
-pesca_carta :-
+pesca_carte(N) :-
     mazzo(Mazzo),
     mano_giocatore1(ManoGiocatore1),
-    prendi_prime_n_carte(1, Mazzo, PrimeCarte, Rimanenti),
+    mano_giocatore2(ManoGiocatore2),
+
+    prendi_prime_n_carte(N, Mazzo, PrimeCarte, Rimanenti),
+    (   N = 2
+    ->  append(ManoGiocatore2,PrimeCarte,NuovaMano),
+        retract(mazzo(Mazzo)),
+        assertz(mazzo(Rimanenti)),
+        retract(mano_giocatore2(ManoGiocatore2)),
+        assertz(mano_giocatore2(NuovaMano))
+    ;
     append(ManoGiocatore1,PrimeCarte,NuovaMano),
-    retract(mazzo(Mazzo)),
-    assertz(mazzo(Rimanenti)),
-    retract(mano_giocatore1(ManoGiocatore1)),
-    assertz(mano_giocatore1(NuovaMano)).
-
-
-
+        retract(mazzo(Mazzo)),
+        assertz(mazzo(Rimanenti)),
+        retract(mano_giocatore1(ManoGiocatore1)),
+        assertz(mano_giocatore1(NuovaMano))
+    ).
 
 % Controlla se la carta che si vuole giocare si puo giocare e attiva
 % l'effetto
@@ -165,7 +173,7 @@ gioca_carta :-
               ->  write('Hai scelto di giocare: '),
                   writeln(Carta_Giocata),
                   select(Carta_Giocata, ManoGiocatore1, NuovaMano1),
-                  usa_carta(Carta_Giocata),
+                  attiva_effetto(Carta_Giocata),
               % Aggiungi Carta_Giocata a Carte_Giocate
                NuoveCarteGiocate = [Carta_Giocata | Carte_Giocate],
                retract(mano_giocatore1(ManoGiocatore1)),
