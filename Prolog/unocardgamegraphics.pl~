@@ -2,11 +2,22 @@
 :- [regole].
 start_game :-
     free(@dialog), % @ prende indirizzo di memoria
-
     % creo finestra
     new(@dialog, dialog('Uno e mezzo')),
     send(@dialog, size, size(700,700)),
+    send(@finestra, done_message, message(@prolog, esci_dal_gioco)),
    % send(@dialog, background, white),
+
+
+    %inserisco l'immagine come sfondo
+    %source_file(start_app, File),
+    %rimuovi_file_da_percorso(File, Risultato),
+    %directory_file_path(Risultato, '/Immagini/background.jpg', NuovoPercorso),
+    new(Background, image('C:/Users/diego/Desktop/Prolog/UnoGameCard-on-prolog/Prolog/immagini/background.jpeg')),
+    new(BitmapBackground, bitmap(Background)),
+    send(@dialog, display, BitmapBackground),
+    send(BitmapBackground, center, @dialog?center),
+
 
     % immagine titolo
     get(@dialog,size, size(W, _)),
@@ -21,16 +32,6 @@ start_game :-
     %send(Label, font, font(helvetica, bold, 20)),
 
 
-
-    % inserisco l'immagine come sfondo
-    %source_file(start_app, File),
-    %rimuovi_file_da_percorso(File, Risultato),
-    %directory_file_path(Risultato, '/Immagini/background.jpg', NuovoPercorso),
-    new(Background, image('C:/Users/diego/Desktop/Prolog/UnoGameCard-on-prolog/Prolog/immagini/background.jpeg')),
-    new(BitmapBackground, bitmap(Background)),
-    send(@dialog, display, BitmapBackground),
-    send(BitmapBackground, center, @dialog?center),
-
     %bottone play
     free(@playbutton),
     new(@playbutton, button('Inizia Gioco', message(@prolog, start_the_game))),
@@ -39,6 +40,7 @@ start_game :-
     get(@playbutton,size,size(Pbw,_)),
     XPlaybutton is (W-Pbw)/2,
     send(@dialog, display, @playbutton, point(XPlaybutton,500)),
+
 
     %bottone regole
     free(@rulesbutton),
@@ -54,8 +56,8 @@ start_game :-
 start_the_game :-
     writeln('Il gioco è iniziato!').
 
-rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
-    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
+%rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
+%   file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
 
 esci_dal_gioco :-
-    free(@finestra).
+    free(@dialog).

@@ -52,6 +52,43 @@ card(0, yellow).
 card(+2, yellow).
 card(stop, yellow).
 
+% Variabili dinamiche
+:-dynamic mazzo/1.
+:-dynamic mano_giocatore1/1.
+:-dynamic mano_giocatore2/1.
+:-dynamic carte_giocate/1.
+
+% Inizializzazione delle variabili dinamiche
+inizializza_gioco :-
+    % Rettractall svuota tutte le variabili
+    retractall(mazzo(_)),
+    retractall(mano_giocatore1(_)),
+    retractall(mano_giocatore2(_)),
+    retractall(carte_giocate(_)),
+    lista_carte_randomizzata(Mazzo),
+    % Metto dentro mazzo il mazzo randomizzato
+    assertz(mazzo(Mazzo)),
+    % Richiamo distribuisci carte e modifico le mani e le carte giocati
+    distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
+    assertz(mano_giocatore1(ManoGiocatore1)),
+    assertz(mano_giocatore2(ManoGiocatore2)),
+    assertz(carte_giocate(Carte_Giocate)).
+
+
+% Stampa il mazzo le mani, la grandezza del mazzo e le carte giocate
+stampa :-
+    mazzo(Mazzo),
+    mano_giocatore1(ManoGiocatore1),
+    mano_giocatore2(ManoGiocatore2),
+    carte_giocate(Carte_Giocate),
+    length(Mazzo,Lunghezza),
+    writeln('mazzo : '), writeln(Mazzo),
+    writeln('mazzo lunghezza : '), writeln(Lunghezza),
+    writeln('mano1 : '), writeln(ManoGiocatore1),
+    writeln('mano2 : '), writeln(ManoGiocatore2),
+    writeln('carte : '), writeln(Carte_Giocate).
+
+
 % Funzione per ottenere lista di carte
 lista_carte(CardList) :-
     findall(card(Value, Color), (value(Value), color(Color)), CardList).
@@ -61,33 +98,99 @@ lista_carte_randomizzata(Mazzo) :-
     lista_carte(ListaCarte),
     random_permutation(ListaCarte, Mazzo).
 
+
 prendi_prime_n_carte(N, Mazzo, PrimeCarte, Rimanenti) :-
     length(PrimeCarte, N),  % Crea una lista di lunghezza N
     append(PrimeCarte, Rimanenti, Mazzo).  % Dividi la lista in PrimeCarte e Rimanenti
 
 % Funzione per distribuire le carte ai giocatori
 distribuisci_carte(ManoGiocatore1, ManoGiocatore2,Carte_Giocate) :-
-    lista_carte_randomizzata(Mazzo),
+    mazzo(Mazzo),
     % Prendi le prime 5 carte per il Giocatore 1
     prendi_prime_n_carte(5, Mazzo, ManoGiocatore1, Rimanenti),
     % Prendi le prime 5 carte per il Giocatore 2
     prendi_prime_n_carte(5, Rimanenti, ManoGiocatore2,  NuoveRimanenti),
     %metti la prima carta del mazzo nelle carte giocate
-    prendi_prime_n_carte(1, NuoveRimanenti, Carte_Giocate,  _).
-    % append(ManoGiocatore1, ManoGiocatore2, CarteNelleMani).  % Unisci le mani dei giocatori
+    prendi_prime_n_carte(1, NuoveRimanenti, Carte_Giocate,  RimanentiFinali),
+    retract(mazzo(Mazzo)),
+    assertz(mazzo(RimanentiFinali)).
 
-gioca_carta(ManoGiocatore1,Carta_Giocata) :-
-  distribuisci_carte(ManoGiocatore1,_,Carte_Giocate),
-  write('Carte nella tua mano: '),nl,write(ManoGiocatore1),nl, write('Scegli carta da giocare  ( tipo card(3,red))'),nl,
-  read(Carta_Giocata),
-  (
-      member(Carta_Giocata, ManoGiocatore1) % if da levare che tanto inutile se si usa la grafica
-      -> write('Hai scelto di giocare: '), write(Carta_Giocata), nl
-      ;  write('Carta non valida! Riprova.'), nl,
-      gioca_carta(ManoGiocatore1, Carta_Giocata)
-  ),
-  append(Carte_Giocate,Carta_Giocata,ManoGiocatore1),
-  write(ManoGiocatore1),nl,write(Carte_Giocate).
+% Controlla se la carta è dello stesso colore o dello stesso valore
+% della prima carta giocata
+carta_valida(card(ValoreGiocato, ColoreGiocato), card(ValorePrima, ColorePrima)) :-
+    (ValoreGiocato == ValorePrima; ColoreGiocato == ColorePrima).
+
+
+% Se è una carta blocco o + 2 attiva l'effetto
+usa_carta(card(ValoreGiocato, _)):-
+    (   ValoreGiocato == +2
+    ->  write('+2 carte pescate')
+    ;
+        (   ValoreGiocato == stop
+        ->  write('stop turno')
+        ;
+        write('carta numero giocata')
+        )
+    ).
+
+% Pesca una carta dal mazzo e la mette nella mano
+pesca_carta :-
+    mazzo(Mazzo),
+    mano_giocatore1(ManoGiocatore1),
+    prendi_prime_n_carte(1, Mazzo, PrimeCarte, Rimanenti),
+    append(ManoGiocatore1,PrimeCarte,NuovaMano),
+    retract(mazzo(Mazzo)),
+    assertz(mazzo(Rimanenti)),
+    retract(mano_giocatore1(ManoGiocatore1)),
+    assertz(mano_giocatore1(NuovaMano)).
+
+
+
+
+% Controlla se la carta che si vuole giocare si puo giocare e attiva
+% l'effetto
+gioca_carta :-
+    mano_giocatore1(ManoGiocatore1),
+    carte_giocate(Carte_Giocate),
+    write('Carte nella tua mano: '),
+    writeln(ManoGiocatore1),
+    writeln('Scegli carta da giocare(tipo card(3,red)):'),
+    writeln('Carta al centro :'),
+    writeln(Carte_Giocate),
+    read(Carta_Giocata),
+   (
+      member(Carta_Giocata, ManoGiocatore1)
+      ->  (Carte_Giocate = [PrimaCarta|_]  % Prendi la prima carta delle carte giocate
+          ->  (carta_valida(Carta_Giocata, PrimaCarta)
+              ->  write('Hai scelto di giocare: '),
+                  writeln(Carta_Giocata),
+                  select(Carta_Giocata, ManoGiocatore1, NuovaMano1),
+                  usa_carta(Carta_Giocata),
+              % Aggiungi Carta_Giocata a Carte_Giocate
+               NuoveCarteGiocate = [Carta_Giocata | Carte_Giocate],
+               retract(mano_giocatore1(ManoGiocatore1)),
+               assertz(mano_giocatore1(NuovaMano1)),
+               retract(carte_giocate(Carte_Giocate)),
+               assertz(carte_giocate(NuoveCarteGiocate)),
+               writeln('Carta giocata correttamente: '),
+               writeln('Nuova mano: '),
+               writeln(NuovaMano1),
+               writeln('Carte giocate: '),
+               writeln(NuoveCarteGiocate)
+              ;
+              writeln('Carta non valida. Deve essere dello stesso colore o valore.'),
+               gioca_carta
+              )
+          ;
+          writeln('Nessuna carta giocata per il controllo.')
+          )
+      ;
+        writeln('Carta non valida! Riprova.'),
+      gioca_carta
+   ).
+
+
+
 % Definizione valori delle carte
 value(1).
 value(2).

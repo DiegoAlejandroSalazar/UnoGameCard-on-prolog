@@ -5,6 +5,7 @@ start_game :-
     % creo finestra
     new(@dialog, dialog('Uno e mezzo')),
     send(@dialog, size, size(700,700)),
+    send(@dialog, done_message, message(@prolog, esci_dal_gioco)),
    % send(@dialog, background, white),
 
 
@@ -55,8 +56,8 @@ start_game :-
 start_the_game :-
     writeln('Il gioco è iniziato!').
 
-rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
-    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
+%rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
+%   file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
 
 esci_dal_gioco :-
-    free(@finestra).
+    free(@dialog).
