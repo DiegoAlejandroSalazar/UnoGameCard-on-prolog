@@ -111,6 +111,9 @@ card(stop, yellow2).
 :-dynamic mano_giocatore1/1.
 :-dynamic mano_giocatore2/1.
 :-dynamic carte_giocate/1.
+:-dynamic giocatore_attivo/1.
+:-dynamic turno_bloccato/1.
+:-dynamic gioco_finito/1.
 
 % Inizializzazione delle variabili dinamiche
 inizializza_gioco :-
@@ -119,6 +122,9 @@ inizializza_gioco :-
     retractall(mano_giocatore1(_)),
     retractall(mano_giocatore2(_)),
     retractall(carte_giocate(_)),
+    retractall(giocatore_attivo(_)),
+    retractall(turno_bloccato(_)),
+    retractall(gioco_finito(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
     assertz(mazzo(Mazzo)),
@@ -126,7 +132,10 @@ inizializza_gioco :-
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
     assertz(mano_giocatore1(ManoGiocatore1)),
     assertz(mano_giocatore2(ManoGiocatore2)),
-    assertz(carte_giocate(Carte_Giocate)).
+    assertz(carte_giocate(Carte_Giocate)),
+    assertz(giocatore_attivo(1)),
+    assertz(turno_bloccato(no)),
+    assertz(gioco_finito(no)).
 
 
 % Stampa il mazzo le mani, la grandezza del mazzo e le carte giocate
@@ -169,33 +178,58 @@ distribuisci_carte(ManoGiocatore1, ManoGiocatore2,Carte_Giocate) :-
     retract(mazzo(Mazzo)),
     assertz(mazzo(RimanentiFinali)).
 
+
+% rimuove il suffisso 2 dalle se c'è cosi da fare i confronti
+rimuovi_suffisso_2(Colore, ColoreSenzaSuffisso) :-
+    atom_concat(ColoreSenzaSuffisso, '2', Colore), !.
+rimuovi_suffisso_2(Colore, Colore).
+
+
 % Controlla se la carta è dello stesso colore o dello stesso valore
 % della prima carta giocata
 carta_valida(card(ValoreGiocato, ColoreGiocato), card(ValorePrima, ColorePrima)) :-
-    (ValoreGiocato == ValorePrima; ColoreGiocato == ColorePrima).
+    rimuovi_suffisso_2(ColoreGiocato, ColoreGiocatoSenzaSuffisso),
+    rimuovi_suffisso_2(ColorePrima, ColorePrimaSenzaSuffisso),
+    (ValoreGiocato == ValorePrima;
+    ColoreGiocatoSenzaSuffisso == ColorePrimaSenzaSuffisso).
 
 
 % Se è una carta blocco o + 2 attiva l'effetto
 attiva_effetto(card(ValoreGiocato, _)):-
+    giocatore_attivo(GiocatoreAttivo),
     (   ValoreGiocato == +2
-    ->  write('+2 carte pescate'),
-        pesca_carte(2)
+     ->
+        ( GiocatoreAttivo = 1
+        ->
+          writeln('IA: +2 carte pescate'),
+          writeln(''),
+          pesca_carte(2,2)
+        ;
+          writeln(' +2 carte pescate'),
+          writeln(''),
+          pesca_carte(2,1)
+        )
     ;
         (   ValoreGiocato == stop
-        ->  write('stop turno')
+        ->
+           retractall(turno_bloccato(_)),
+           assertz(turno_bloccato(si))
         ;
-        write('carta numero giocata')
+        writeln('carta numero giocata'),
+        writeln('')
         )
     ).
 
-% Pesca una carta dal mazzo e la mette nella mano
-pesca_carte(N) :-
+
+% Pesca una carta dal mazzo e la mette nella mano N = numero carte da
+% pescare, P = player che pescherà le carte
+pesca_carte(N,P) :-
     mazzo(Mazzo),
     mano_giocatore1(ManoGiocatore1),
     mano_giocatore2(ManoGiocatore2),
 
     prendi_prime_n_carte(N, Mazzo, PrimeCarte, Rimanenti),
-    (   N = 2
+    (   P = 2
     ->  append(ManoGiocatore2,PrimeCarte,NuovaMano),
         retract(mazzo(Mazzo)),
         assertz(mazzo(Rimanenti)),
@@ -214,42 +248,155 @@ pesca_carte(N) :-
 gioca_carta :-
     mano_giocatore1(ManoGiocatore1),
     carte_giocate(Carte_Giocate),
-    write('Carte nella tua mano: '),
+    writeln('Carte nella tua mano: '),
+    writeln('--------------------------------------------------------------------------'),
     writeln(ManoGiocatore1),
-    writeln('Scegli carta da giocare(tipo card(3,red)):'),
+    writeln('--------------------------------------------------------------------------'),
     writeln('Carta al centro :'),
-    writeln(Carte_Giocate),
+    carte_giocate([PrimaCarta|_]),
+    writeln(PrimaCarta),
+    writeln('--------------------------------------------------------------------------'),
+    writeln('Scegli carta da giocare(tipo card(3,red) oppure scrivi "pesca" per pescare una carta):'),
     read(Carta_Giocata),
-   (
+    (   Carta_Giocata = pesca
+    ->  pesca_carte(1,1),
+        writeln('Hai pescato una carta. Turno finito.'),
+        writeln('')
+    ;
+     (
       member(Carta_Giocata, ManoGiocatore1)
       ->  (Carte_Giocate = [PrimaCarta|_]  % Prendi la prima carta delle carte giocate
           ->  (carta_valida(Carta_Giocata, PrimaCarta)
               ->  write('Hai scelto di giocare: '),
-                  writeln(Carta_Giocata),
-                  select(Carta_Giocata, ManoGiocatore1, NuovaMano1),
-                  attiva_effetto(Carta_Giocata),
+               writeln(Carta_Giocata),
+               writeln(''),
+               select(Carta_Giocata, ManoGiocatore1, NuovaMano1),
+               attiva_effetto(Carta_Giocata),
               % Aggiungi Carta_Giocata a Carte_Giocate
                NuoveCarteGiocate = [Carta_Giocata | Carte_Giocate],
                retract(mano_giocatore1(ManoGiocatore1)),
                assertz(mano_giocatore1(NuovaMano1)),
                retract(carte_giocate(Carte_Giocate)),
                assertz(carte_giocate(NuoveCarteGiocate)),
-               writeln('Carta giocata correttamente: '),
+               writeln('Carta giocata correttamente. '),
+               writeln('--------------------------------------------------------------------------'),
                writeln('Nuova mano: '),
+               writeln('--------------------------------------------------------------------------'),
                writeln(NuovaMano1),
-               writeln('Carte giocate: '),
-               writeln(NuoveCarteGiocate)
+               writeln('--------------------------------------------------------------------------')
+               %writeln('Carte giocate: '),
+              %writeln('--------------------------------------------------------------------------'),
+               %writeln(NuoveCarteGiocate),
+               %writeln('--------------------------------------------------------------------------')
               ;
               writeln('Carta non valida. Deve essere dello stesso colore o valore.'),
+              writeln(''),
                gioca_carta
               )
           ;
-          writeln('Nessuna carta giocata per il controllo.')
+          writeln('Nessuna carta giocata per il controllo.'),
+          writeln('')
           )
       ;
         writeln('Carta non valida! Riprova.'),
+        writeln(''),
       gioca_carta
-   ).
+     )
+    ).
+
+% se la mano è vuota allora il predicato fallisce ( impossibile in teoria)
+miglior_carta_da_giocare(_, [], _) :- fail.
+
+miglior_carta_da_giocare([PrimaCartaGiocata|_], [Carta|_], Carta) :-
+    carta_valida(Carta, PrimaCartaGiocata), !. % l'operatore ( cut ! ) impredisce di trovare altre carte valide
+miglior_carta_da_giocare(CarteGiocate, [_|CarteRimanenti], Carta) :-
+    miglior_carta_da_giocare(CarteGiocate, CarteRimanenti, Carta).
+
+
+% Fa giocare l'ia controlla la miglior carta da giocare, modifica la
+% mano e le carte giocate, se non puo giocare pesca una carta
+gioca_carta_ia :-
+    mano_giocatore2(ManoGiocatore2),
+    carte_giocate(Carte_Giocate),
+    writeln('Mano IA: '),
+    writeln('--------------------------------------------------------------------------'),
+    writeln(ManoGiocatore2),
+        writeln('--------------------------------------------------------------------------'),
+    miglior_carta_da_giocare(Carte_Giocate, ManoGiocatore2, CartaGiocata),
+    attiva_effetto(CartaGiocata),
+    select(CartaGiocata, ManoGiocatore2, NuovaMano2),
+    NuoveCarteGiocate = [CartaGiocata | Carte_Giocate],
+    retract(mano_giocatore2(ManoGiocatore2)),
+    assertz(mano_giocatore2(NuovaMano2)),
+    retract(carte_giocate(Carte_Giocate)),
+    assertz(carte_giocate(NuoveCarteGiocate)),
+    writeln('IA ha giocato: '),
+    writeln(CartaGiocata),
+    writeln('Nuova Mano IA:'),
+    writeln('--------------------------------------------------------------------------'),
+    writeln(NuovaMano2),
+    writeln('--------------------------------------------------------------------------').
+gioca_carta_ia :-
+    writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
+    writeln(''),
+    pesca_carte(1, 2).
+
+
+% Mette la variabile giocatore_attivo a 1 e controlla se il gioco è
+% finito, altrimenti richiama gioca carta, controllo vittora e fa
+% partire il turno dell'ia
+turno_giocatore :-
+    (   gioco_finito(si)
+    ->  true
+    ;   turno_bloccato(si)
+    ->  writeln('Il tuo turno è bloccato!'),
+        retractall(turno_bloccato(_)),
+        assertz(turno_bloccato(no)),
+        turno_ia
+    ;   writeln('Il tuo turno!'),
+        gioca_carta,
+        controlla_vittoria,
+        turno_ia
+    ).
+% contrario del truno giocatore
+ turno_ia :-
+    (   gioco_finito(si)
+    ->  true
+    ;   turno_bloccato(si)
+    ->  writeln('Il turno dell\'IA è bloccato!'),
+        retractall(turno_bloccato(_)),
+        assertz(turno_bloccato(no)),
+        turno_giocatore
+    ;   writeln('Turno dell\'IA...'),
+        gioca_carta_ia,
+        controlla_vittoria,
+        turno_giocatore
+    ).
+    % Controlla se le mani sono vuote e cambia la variabile dinamica gioco_finito
+controlla_vittoria :-
+    mano_giocatore1(ManoGiocatore1),
+    mano_giocatore2(ManoGiocatore2),
+    (   ManoGiocatore1 = []
+    ->  writeln('Giocatore 1 ha vinto!'),
+        retractall(gioco_finito(_)),
+        assertz(gioco_finito(si))
+        %halt
+    ;   ManoGiocatore2 = []
+    ->  writeln('Giocatore 2 (IA) ha vinto!'),
+        retractall(gioco_finito(_)),
+        assertz(gioco_finito(si))
+        %halt
+    ;   true  % Nessun vincitore
+    ).
+
+% Predicato che inizializza il gioco e fa iniziare il giocatore ( si puo
+% fare che si parte a caso
+inizia_gioco :-
+    inizializza_gioco,
+    writeln('gioco iniziato'),
+    turno_giocatore.
+    %turno_ia.
+
 
 % Definizione valori delle carte
 value(1).
