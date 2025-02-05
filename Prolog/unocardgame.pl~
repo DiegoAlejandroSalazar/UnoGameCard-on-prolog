@@ -415,10 +415,13 @@ estrai_elementi([card(Valore, Colore), Peso], Valore, Colore, Peso).
 % Cerca la miglior carta da giocare nella mano dell'ia ( per mo vede
 % solo la prima carta valida che può giocare).
 %miglior_carta_da_giocare(_, [], _) :- fail.
-%
+
+% Predicato ausiliare che da true ( perche miglior_carta_da_giocare da
+% sempre false)
 miglior_carta_da_giocare_aux([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimanenti], CartaGiocata):-
  \+ miglior_carta_da_giocare([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimanenti], CartaGiocata).
 
+% Controlla la miglior carta da giocare
 miglior_carta_da_giocare([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimanenti], CartaGiocata) :-
     (
          \+ carta_valida(card(Valore,Colore), PrimaCartaGiocata)
@@ -438,7 +441,6 @@ miglior_carta_da_giocare([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimane
      append(CartaLista,CarteGiocabili,NuoveCarteGiocabili),
      retractall(carte_giocabili_ia([])),
      assertz(carte_giocabili_ia(NuoveCarteGiocabili)),
-     %writeln(NuoveCarteGiocabili),
      sort(2, @=<, NuoveCarteGiocabili, NuoveCarteGiocabiliOrdinata),
      NuoveCarteGiocabiliOrdinata = [PrimaCarta|_],
      estrai_elementi(PrimaCarta, Valore1, Colore1, _),
@@ -626,6 +628,7 @@ controlla_vittoria :-
         assertz(gioco_finito(si))
     ;   true  % Nessun vincitore
     ).
+
 
 % Predicato che inizializza il gioco e fa partire un giocatore a caso.
 inizia_gioco :-
