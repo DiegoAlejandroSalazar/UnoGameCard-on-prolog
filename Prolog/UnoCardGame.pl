@@ -107,22 +107,30 @@ card(stop, yellow2).
 
 
 
-% Variabili dinamiche
+% Variabili dinamiche.
 :-dynamic mazzo/1.
 :-dynamic mano_giocatore1/1.
 :-dynamic mano_giocatore2/1.
+:-dynamic carte_giocabili_ia/1.
 :-dynamic carte_giocate/1.
+:-dynamic carta_da_giocare_ia/1.
 :-dynamic giocatore_attivo/1.
 :-dynamic turno_bloccato/1.
 :-dynamic detto_uno/1.
 :-dynamic gioco_finito/1.
 
-% Inizializzazione delle variabili dinamiche
+% Inizializzazione del gioco
+% 1. svuotamento variabili dinamiche,
+% 2. creazione e randomizzazione del mazzo,
+% 3. assegnazione mani ai giocatori,
+% 4. inizializzazione delle variabili dinamiche.
 inizializza_gioco :-
-    % Rettractall svuota tutte le variabili
+    % Rettractall svuota le variabili
     retractall(mazzo(_)),
     retractall(mano_giocatore1(_)),
     retractall(mano_giocatore2(_)),
+    retractall(carte_giocabili_ia(_)),
+    retractall(carta_da_giocare_ia(_)),
     retractall(carte_giocate(_)),
     retractall(giocatore_attivo(_)),
     retractall(turno_bloccato(_)),
@@ -134,52 +142,38 @@ inizializza_gioco :-
     % Richiamo distribuisci carte e modifico le mani e le carte giocati
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
     assertz(mano_giocatore1(ManoGiocatore1)),
-    Carta = [card(+4,cambio)],
-    append(Carta,ManoGiocatore2,ManoGiocatore21),
-    assertz(mano_giocatore2(ManoGiocatore21)),
+    %Carta = [card(+4,cambio)],
+    %append(Carta,ManoGiocatore2,ManoGiocatore21),
+    assertz(mano_giocatore2(ManoGiocatore2)),
     assertz(carte_giocate(Carte_Giocate)),
+    assertz(carte_giocabili_ia([])),
+    assertz(carta_da_giocare_ia([])),
     assertz(giocatore_attivo(1)),
     assertz(turno_bloccato(no)),
     assertz(detto_uno(no)),
     assertz(gioco_finito(no)).
 
-
-% Stampa il mazzo le mani, la grandezza del mazzo e le carte giocate
-stampa :-
-    mazzo(Mazzo),
-    mano_giocatore1(ManoGiocatore1),
-    mano_giocatore2(ManoGiocatore2),
-    carte_giocate(Carte_Giocate),
-    length(Mazzo,Lunghezza),
-    writeln('mazzo : '), writeln(Mazzo),
-    writeln('mazzo lunghezza : '), writeln(Lunghezza),
-    writeln('mano1 : '), writeln(ManoGiocatore1),
-    writeln('mano2 : '), writeln(ManoGiocatore2),
-    writeln('carte : '), writeln(Carte_Giocate).
-
-
-% Funzione per ottenere lista di carte
+% Funzione per ottenere lista di carte.
 lista_carte(CardList) :-
     findall(card(Value, Color), (value(Value), color(Color)), NormalCards),
-    %lista con 4 +4
+    %lista con i +4
     SpecialCards1 = [card(+4, cambio), card(+4, cambio), card(+4, cambio), card(+4, cambio)],
-    %lista con 4 cambiocolore
+    %lista con i cambiocolore
     SpecialCards2 = [card(cambio, cambio), card(cambio, cambio), card(cambio, cambio), card(cambio, cambio)],
     append(NormalCards,SpecialCards1,CardList1),
     append(CardList1,SpecialCards2,CardList).
 
-% Funzione per ottenere una lista randomizzata di carte
+% Funzione per ottenere una lista randomizzata di carte.
 lista_carte_randomizzata(Mazzo) :-
     lista_carte(ListaCarte),
     random_permutation(ListaCarte, Mazzo).
 
-
+% Funzione per prendere le prime N carte dal Mazzo.
 prendi_prime_n_carte(N, Mazzo, PrimeCarte, Rimanenti) :-
     length(PrimeCarte, N),  % Crea una lista di lunghezza N
     append(PrimeCarte, Rimanenti, Mazzo).  % Dividi la lista in PrimeCarte e Rimanenti
 
-% verifica che la carta sia un cambio o un +4 e ricerca una carta che
-% non sia tra queste
+% Verifica che la carta non sia una cambio altrimenti ne cerca un altra.
 prendi_carta_valida([Carta | Resto], [Carta], Resto) :-
     Carta \= card(cambio, cambio),
     Carta \= card(+4, cambio).
@@ -188,27 +182,27 @@ prendi_carta_valida([Carta | Resto], Carte_Giocate, NuoveRimanenti) :-
     prendi_carta_valida(Resto, Carte_Giocate, NuoveRimanenti).
 
 
-% Funzione per distribuire le carte ai giocatori
+% Funzione per distribuire le carte ai giocatori.
 distribuisci_carte(ManoGiocatore1, ManoGiocatore2,Carte_Giocate) :-
     mazzo(Mazzo),
     % Prendi le prime 5 carte per il Giocatore 1
-    prendi_prime_n_carte(2, Mazzo, ManoGiocatore1, Rimanenti),
+    prendi_prime_n_carte(5, Mazzo, ManoGiocatore1, Rimanenti),
     % Prendi le prime 5 carte per il Giocatore 2
     prendi_prime_n_carte(5, Rimanenti, ManoGiocatore2,  NuoveRimanenti),
-    %metti la prima carta del mazzo nelle carte giocate
+    % Metti la prima carta del mazzo nelle carte giocate
     prendi_carta_valida(NuoveRimanenti, Carte_Giocate, RimanentiFinali),
     retract(mazzo(Mazzo)),
     assertz(mazzo(RimanentiFinali)).
 
 
-% rimuove il suffisso 2 dalle se c'è cosi da fare i confronti
+% Rimuove il suffisso 2 dalle carte se c'è, cosi da fare i confronti.
 rimuovi_suffisso_2(Colore, ColoreSenzaSuffisso) :-
     atom_concat(ColoreSenzaSuffisso, '2', Colore), !.
 rimuovi_suffisso_2(Colore, Colore).
 
 
 % Controlla se la carta è dello stesso colore o dello stesso valore
-% della prima carta giocata
+% della prima carta giocata oppure se è una carta cambio.
 carta_valida(card(ValoreGiocato, ColoreGiocato), card(ValorePrima, ColorePrima)) :-
     rimuovi_suffisso_2(ColoreGiocato, ColoreGiocatoSenzaSuffisso),
     rimuovi_suffisso_2(ColorePrima, ColorePrimaSenzaSuffisso),
@@ -216,13 +210,11 @@ carta_valida(card(ValoreGiocato, ColoreGiocato), card(ValorePrima, ColorePrima))
     ColoreGiocatoSenzaSuffisso == ColorePrimaSenzaSuffisso;
     ColoreGiocatoSenzaSuffisso == cambio).
 
-% Funzione per scegliere il colore ( da contrllare se funge la cosa che
-% si richiama da sola
+% Funzione per scegliere il colore.
 scegli_colore(card(_, ColoreScelto),NuovoColore) :-
     scegli_colore_aux(ColoreScelto,NuovoColore).
-    %format('Colore scelto: ~w~n', [ColoreScelto]).
 
-% Richiesta effettiva del colore
+% Richiesta effettiva del colore.
 scegli_colore_aux(_,ColoreScelto) :-
     writeln('Scegli un colore (red, green, blue, yellow):'),
     read(ColoreInserito),
@@ -235,7 +227,7 @@ scegli_colore_aux(_,ColoreScelto) :-
      scegli_colore_aux(_,ColoreScelto)
     ).
 
-% Funzione per cambiare il colore della carta
+% Funzione per cambiare il colore della carta.
 cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
     giocatore_attivo(Giocatore),
      mano_giocatore2(ManoGiocatore2),
@@ -247,16 +239,16 @@ cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
         colore_massimo(ManoGiocatore2,NuovoColore)
     ),
     carte_giocate(CarteGiocate),
-    %crea una lista con solo la nuova carta e la appende alla nuova lista di carte giocate e poi aggiorna la variabile dinamica
+    % Crea una lista con solo la nuova carta e la appende alla nuova lista di carte giocate e poi aggiorna la variabile dinamica
     CartaNuova = [card(ValoreGiocato,NuovoColore)],
-    CartaVecchia = [card(ValoreGiocato,ColoreScelto)],
+    CartaVecchia = [card(ValoreGiocato,ColoreScelto)], % dovuto mette una variabile perchè prolog va schifo
     append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
     append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
     retractall(carte_giocate(_)),
     assertz(carte_giocate(NuoveCarteGiocate)),
     writeln('Colore cambiato con successo!').
 
-% Se attiva l'effetto della carta giocata
+% Funzione che attiva l'effetto della carta giocata.
 attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     giocatore_attivo(GiocatoreAttivo),
     (   ValoreGiocato == +2 ->
@@ -299,7 +291,7 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         writeln('')
     ).
 % Pesca una carta dal mazzo e la mette nella mano N = numero carte da
-% pescare, P = player che pescherà le carte
+% pescare, P = player che pescherà le carte.
 pesca_carte(N,P) :-
     mazzo(Mazzo),
     mano_giocatore1(ManoGiocatore1),
@@ -319,16 +311,17 @@ pesca_carte(N,P) :-
         retract(mano_giocatore1(ManoGiocatore1)),
         assertz(mano_giocatore1(NuovaMano))
     ).
+
+% Funzione che cambia il valore della variabile dinamica.
 bottone_uno :-
     writeln('Hai detto uno'),
     retractall(detto_uno(_)),
     assertz(detto_uno(si)).
-   % controllo_uno.
 
+% Funzione che controlla le varie casistiche di UNO
 controllo_uno:-
     mano_giocatore1(ManoGiocatore1),
     detto_uno(Uno),
-    writeln(Uno),
     length(ManoGiocatore1,Lunghezza),
     (
      Lunghezza = 1
@@ -345,13 +338,18 @@ controllo_uno:-
         ->
         writeln('HAI DETTO UNO ANCHE SE NON AVEVI UNA SOLA CARTA!'),
             pesca_carte(2,1)
+        ;
+        writeln('tutto apposto non hai detto uno senza motivo')
         )
     ),
     retractall(detto_uno(_)),
     assertz(detto_uno(no)).
 
-% Controlla se la carta che si vuole giocare si puo giocare e attiva
-% l'effetto
+% Funzione che fa fare un azione al giocatore :
+% 1. giocare una carta in mano ( controlla se è giocabile o se la ha
+% nella mano e attiva l'effetto,
+% 2. pescare,
+% 3. dire uno.
 gioca_carta :-
     mano_giocatore1(ManoGiocatore1),
     carte_giocate(Carte_Giocate),
@@ -413,27 +411,63 @@ gioca_carta :-
     )
     ).
 
-% se la mano è vuota allora il predicato fallisce ( impossibile in teoria)
-miglior_carta_da_giocare(_, [], _) :- fail.
+estrai_elementi([card(Valore, Colore), Peso], Valore, Colore, Peso).
+% Cerca la miglior carta da giocare nella mano dell'ia ( per mo vede
+% solo la prima carta valida che può giocare).
+%miglior_carta_da_giocare(_, [], _) :- fail.
 
-miglior_carta_da_giocare([PrimaCartaGiocata|_], [Carta|_], Carta) :-
-    carta_valida(Carta, PrimaCartaGiocata),
-    !. % l'operatore ( cut ! ) impredisce di trovare altre carte valide
-miglior_carta_da_giocare(CarteGiocate, [_|CarteRimanenti], Carta) :-
-    miglior_carta_da_giocare(CarteGiocate, CarteRimanenti, Carta).
+% Predicato ausiliare che da true ( perche miglior_carta_da_giocare da
+% sempre false)
+miglior_carta_da_giocare_aux([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimanenti], CartaGiocata):-
+ \+ miglior_carta_da_giocare([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimanenti], CartaGiocata).
 
-% Conta il numero di carte per ogni colore nella mano del giocatore2
+% Controlla la miglior carta da giocare
+miglior_carta_da_giocare([PrimaCartaGiocata|_], [card(Valore,Colore)|CarteRimanenti], CartaGiocata) :-
+    (
+         \+ carta_valida(card(Valore,Colore), PrimaCartaGiocata)
+         ->
+         miglior_carta_da_giocare(PrimaCartaGiocata, CarteRimanenti, card(Valore,Colore))
+
+         ;
+         (   Colore = cambio
+         ->
+         Carta = [card(Valore,Colore),1]
+
+         ;
+         Carta = [card(Valore,Colore),0]
+         ),
+     CartaLista = [Carta],
+     carte_giocabili_ia(CarteGiocabili),
+     append(CartaLista,CarteGiocabili,NuoveCarteGiocabili),
+     retractall(carte_giocabili_ia([])),
+     assertz(carte_giocabili_ia(NuoveCarteGiocabili)),
+     sort(2, @=<, NuoveCarteGiocabili, NuoveCarteGiocabiliOrdinata),
+     NuoveCarteGiocabiliOrdinata = [PrimaCarta|_],
+     estrai_elementi(PrimaCarta, Valore1, Colore1, _),
+     CartaGiocata = card(Valore1,Colore1),
+     retractall(carta_da_giocare_ia(_)),
+     assertz(carta_da_giocare_ia(CartaGiocata)),
+     miglior_carta_da_giocare(PrimaCartaGiocata, CarteRimanenti, card(Valore,Colore)),
+     true
+    ). % l'operatore ( cut ! ) impredisce di trovare altre carte valide
+
+ miglior_carta_da_giocare(CarteGiocate, [_|CarteRimanenti], card(Valore,Colore)) :-
+    miglior_carta_da_giocare(CarteGiocate, CarteRimanenti, card(Valore,Colore)).
+
+% Conta il numero di carte per ogni colore nella mano del giocatore2.
 conta_carte_colore([], _, 0).
+
 conta_carte_colore([card(_, Colore)|Resto], Colore, Conteggio) :-
     conta_carte_colore(Resto, Colore, Conteggio1),
     Conteggio is Conteggio1 + 1.
+
 conta_carte_colore([card(_, AltroColore)|Resto], Colore, Conteggio) :-
     AltroColore \= Colore,
     conta_carte_colore(Resto, Colore, Conteggio).
 
-% Se la lista contiente un solo elemento, quello è il massimo
-% Se ce ne sono di più confronta il conteggio corrente con quello
-% massimo e lo modifica se è maggiore
+% Se la lista contiente un solo elemento, quello è il massimo,
+% se ce ne sono di più confronta il conteggio corrente con quello
+% massimo e lo modifica se è maggiore.
 max_colore([Colore-Conteggio], Colore-Conteggio).
 max_colore([Colore-Conteggio|Resto], MaxColore-ConteggioMax) :-
     max_colore(Resto, TempColore-ConteggioTemp),
@@ -445,7 +479,7 @@ max_colore([Colore-Conteggio|Resto], MaxColore-ConteggioMax) :-
         ConteggioMax = ConteggioTemp
     ).
 
-% Usata per divide i colori in variabili diverse
+% Usata per divide i colori in variabili diverse.
 dividi_conteggi([], [], [], [], [], [], [], [],[]).
 dividi_conteggi([red-RedConteggio|Resto], [RedConteggio|RedT], Red2, Green, Green2, Blue, Blue2, Yellow, Yellow2) :-
     dividi_conteggi(Resto, RedT, Red2, Green, Green2, Blue, Blue2, Yellow, Yellow2).
@@ -471,7 +505,7 @@ dividi_conteggi([yellow-YellowConteggio|Resto], Red, Red2, Green, Green2, Blue, 
 dividi_conteggi([yellow2-Yellow2Conteggio|Resto], Red, Red2, Green, Green2, Blue, Blue2, Yellow, [Yellow2Conteggio|Yellow2T]) :-
     dividi_conteggi(Resto, Red, Red2, Green, Green2, Blue, Blue2, Yellow, Yellow2T).
 
-% Funzione per trovare il colore con il massimo numero di carte
+% Funzione per trovare il colore con il massimo numero di carte.
 colore_massimo(Mano, ColoreMassimo) :-
     findall(Colore, color(Colore), Colori),
     mappa_carte_colore(Mano, Colori, Conteggi),
@@ -488,14 +522,16 @@ colore_massimo(Mano, ColoreMassimo) :-
     writeln('Colore scelto:'),
     writeln(ColoreMassimo).
 
-% Helper per creare una lista di coppie Colore-Conteggio
+% Crea una lista di coppie Colore-Conteggio.
 mappa_carte_colore(_, [], []).
 mappa_carte_colore(Mano, [Colore|Resto], [Colore-Conteggio|Mappa]) :-
     conta_carte_colore(Mano, Colore, Conteggio),
     mappa_carte_colore(Mano, Resto, Mappa).
 
-% Fa giocare l'ia controlla la miglior carta da giocare, modifica la
-% mano e le carte giocate, se non puo giocare pesca una carta
+% Fa giocare l'ia:
+% 1. controlla la miglior carta da giocare,
+% 2. modifica la mano e le carte giocate,
+% 3. se non puo giocare pesca una carta.
 gioca_carta_ia :-
     controllo_uno,
     mano_giocatore2(ManoGiocatore2),
@@ -508,7 +544,10 @@ gioca_carta_ia :-
     writeln('--------------------------------------------------------------------------'),
     writeln(ManoGiocatore2),
     writeln('--------------------------------------------------------------------------'),
-        miglior_carta_da_giocare(Carte_Giocate, ManoGiocatore2, CartaGiocata),
+        miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
+        carta_da_giocare_ia(CartaGiocata),
+        nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
+        carta_valida(CartaGiocata,PrimaCarta),
         select(CartaGiocata, ManoGiocatore2, NuovaMano2),
         NuoveCarteGiocate = [CartaGiocata | Carte_Giocate],
         retract(mano_giocatore2(ManoGiocatore2)),
@@ -523,16 +562,25 @@ gioca_carta_ia :-
         writeln('Nuova Mano IA:'),
         writeln('--------------------------------------------------------------------------'),
         writeln(NuovaMano2),
-        writeln('--------------------------------------------------------------------------').
+        writeln('--------------------------------------------------------------------------'),
+        retractall(carte_giocabili_ia(_)),
+        assertz(carte_giocabili_ia([])),
+        retract(carta_da_giocare_ia(CartaGiocata)),
+        assertz(carta_da_giocare_ia(_)).
 gioca_carta_ia :-
     writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
+    pesca_carte(1, 2),
+    mano_giocatore2(ManoGiocatore2),
     writeln(''),
-    pesca_carte(1, 2).
+    writeln('Mano IA: '),
+    writeln('--------------------------------------------------------------------------'),
+    writeln(ManoGiocatore2),
+    writeln('--------------------------------------------------------------------------').
 
 
 % Mette la variabile giocatore_attivo a 1 e controlla se il gioco è
 % finito, altrimenti richiama gioca carta, controllo vittora e fa
-% partire il turno dell'ia
+% partire il turno dell'ia.
 turno_giocatore :-
     retractall(giocatore_attivo(_)),
     assertz(giocatore_attivo(1)),
@@ -548,7 +596,7 @@ turno_giocatore :-
         controlla_vittoria,
         turno_ia
     ).
-% contrario del truno giocatore
+% contrario del truno giocatore.
  turno_ia :-
     retractall(giocatore_attivo(_)),
     assertz(giocatore_attivo(2)),
@@ -564,7 +612,9 @@ turno_giocatore :-
         controlla_vittoria,
         turno_giocatore
     ).
-    % Controlla se le mani sono vuote e cambia la variabile dinamica gioco_finito
+
+% Controlla se le mani sono vuote e cambia la variabile dinamica
+% gioco_finito.
 controlla_vittoria :-
     mano_giocatore1(ManoGiocatore1),
     mano_giocatore2(ManoGiocatore2),
@@ -579,7 +629,8 @@ controlla_vittoria :-
     ;   true  % Nessun vincitore
     ).
 
-% Predicato che inizializza il gioco e fa partire un giocatore a caso
+
+% Predicato che inizializza il gioco e fa partire un giocatore a caso.
 inizia_gioco :-
     inizializza_gioco,
     writeln('gioco iniziato'),
@@ -595,10 +646,9 @@ inizia_gioco :-
         writeln(''),
         turno_ia
     ).
-    %turno_ia.
 
 
-% Definizione valori delle carte
+% Definizione valori delle carte.
 value(1).
 value(2).
 value(3).
@@ -610,12 +660,10 @@ value(8).
 value(9).
 value(0).
 value(+2).
-%value(+4).
 value(stop).
-%value(cambio).
 
 
-%definizione colore delle carte
+%definizione colore delle carte.
 color(red).
 color(red2).
 color(green).
@@ -624,7 +672,6 @@ color(blue).
 color(blue2).
 color(yellow).
 color(yellow2).
-%color(cambio).
 
 
 
