@@ -1,16 +1,111 @@
-setta_campo :-
+:- dynamic listaCarteGiocatore/1.
+:- dynamic listaPosizioniCarteGiocatore/1.
+
+lista_carte_giocatore( @carta01,
+                       @carta02,
+                       @carta03,
+                       @carta04,
+                       @carta05,
+                       @carta06,
+                       @carta07,
+                       @carta08,
+                       @carta09,
+                       @carta10,
+                       @carta11,
+                       @carta12,
+                       @carta13,
+                       @carta14,
+                       @carta15,
+                       @carta16,
+                       @carta17,
+                       @carta18
+                     ).
+
+
+lista_posizioni_carte([ point(24,580),
+                        point(24+73,580),
+                        point(24+2*73,580),
+                        point(24+3*73,580),
+                        point(24+4*73,580),
+                        point(24+5*73,580),
+                        point(24+6*73,580),
+                        point(24+7*73,580),
+                        point(24+8*73,580),
+                        point(24,580-105),
+                        point(24+73,580-105),
+                        point(24+2*73,580-105),
+                        point(24+3*73,580-105),
+                        point(24+4*73,580-105),
+                        point(24+5*73,580-105),
+                        point(24+6*73,580-105),
+                        point(24+7*73,580-105),
+                        point(24+8*73,580-105)
+                      ]).
+lista_X([ 24,
+          24+73,
+          24+2*73,
+          24+3*73,
+          24+4*73,
+          24+5*73,
+          24+6*73,
+          24+7*73,
+          24+8*73,
+          24,
+          24+73,
+          24+2*73,
+          24+3*73,
+          24+4*73,
+          24+5*73,
+          24+6*73,
+          24+7*73,
+          24+8*73
+        ]).
+
+lista_Y([ 580,
+          580,
+          580,
+          580,
+          580,
+          580,
+          580,
+          580,
+          580,
+          580-105,
+          580-105,
+          580-105,
+          580-105,
+          580-105,
+          580-105,
+          580-105,
+          580-105,
+          580-105
+        ]).
+
+
+
+
+campo_inizio :-
+
+    retractall(listaCarteGiocatore(_)),
+    retractall(listaPosizioniCarteGiocatore(_)),
+
+    assertz(listaCarteGiocatore(lista_carte_giocatore)),
+    assertz(listaPosizioniCarteGiocatore(lista_posizioni_carte)),
+
+
+
     send(@dialog, background, colour(white)),
 
     %% DA QUI carte giocatore
-    free(@carta8),
-    free(@carta6),
-    free(@carta4),
-    free(@carta2),
-    free(@carta1),
-    free(@carta3),
-    free(@carta5),
-    free(@carta7),
-    free(@carta9),
+    free(@carta08),
+    free(@carta06),
+    free(@carta04),
+    free(@carta02),
+    free(@carta01),
+    free(@carta03),
+    free(@carta05),
+    free(@carta07),
+    free(@carta09),
 
     free(@carta17),
     free(@carta15),
@@ -22,15 +117,15 @@ setta_campo :-
     free(@carta16),
     free(@carta18),
 
-    new(@carta8, box(68, 100)),
-    new(@carta6, box(68, 100)),
-    new(@carta4, box(68, 100)),
-    new(@carta2, box(68, 100)),
-    new(@carta1, box(68, 100)),
-    new(@carta3, box(68, 100)),
-    new(@carta5, box(68, 100)),
-    new(@carta7, box(68, 100)),
-    new(@carta9, box(68, 100)),
+    new(@carta08, box(68, 100)),
+    new(@carta06, box(68, 100)),
+    new(@carta04, box(68, 100)),
+    new(@carta02, box(68, 100)),
+    new(@carta01, box(68, 100)),
+    new(@carta03, box(68, 100)),
+    new(@carta05, box(68, 100)),
+    new(@carta07, box(68, 100)),
+    new(@carta09, box(68, 100)),
 
     new(@carta17, box(68,100)),
     new(@carta15, box(68,100)),
@@ -42,24 +137,24 @@ setta_campo :-
     new(@carta16, box(68,100)),
     new(@carta18, box(68,100)),
 
-    get(@carta8, size, size(Wcarta, Hcarta)),
+    get(@carta08, size, size(Wcarta, Hcarta)),
     Xoffset is Wcarta+5,
     Yoffset is Hcarta+5,
 
-    send(@dialog, display, @carta8, point(24, 580.4)),
-    send(@dialog, display, @carta6, point(24+Xoffset, 580.4)),
-    send(@dialog, display, @carta4, point(24+2*Xoffset, 580.4)),
-    send(@dialog, display, @carta2, point(24+3*Xoffset, 580.4)),
-    send(@dialog, display, @carta1, point(24+4*Xoffset, 580.4)),
-    send(@dialog, display, @carta3, point(24+5*Xoffset, 580.4)),
-    send(@dialog, display, @carta5, point(24+6*Xoffset, 580.4)),
-    send(@dialog, display, @carta7, point(24+7*Xoffset, 580.4)),
-    send(@dialog, display, @carta9, point(24+8*Xoffset, 580.4)),
+    send(@dialog, display, @carta08, point(24, 580.4)),
+    send(@dialog, display, @carta06, point(24+Xoffset, 580.4)),
+    send(@dialog, display, @carta04, point(24+2*Xoffset, 580.4)),
+    send(@dialog, display, @carta02, point(24+3*Xoffset, 580.4)),
+    send(@dialog, display, @carta01, point(24+4*Xoffset, 580.4)),
+    send(@dialog, display, @carta03, point(24+5*Xoffset, 580.4)),
+    send(@dialog, display, @carta05, point(24+6*Xoffset, 580.4)),
+    send(@dialog, display, @carta07, point(24+7*Xoffset, 580.4)),
+    send(@dialog, display, @carta09, point(24+8*Xoffset, 580.4)),
 
-    send(@carta8, displayed, @off),
-    send(@carta6, displayed, @off),
-    send(@carta7, displayed, @off),
-    send(@carta9, displayed, @off),
+    send(@carta08, displayed, @off),
+    send(@carta06, displayed, @off),
+    send(@carta07, displayed, @off),
+    send(@carta09, displayed, @off),
 
     send(@dialog, display, @carta17, point(24, 580.4-Yoffset)),
     send(@dialog, display, @carta15, point(24+Xoffset, 580.4-Yoffset)),
@@ -81,20 +176,17 @@ setta_campo :-
     send(@carta16, displayed, @off),
     send(@carta18, displayed, @off),
 
-    %da togliere
-    send(@carta8, fill_pattern, colour(red)),
-
 
     %% DA QUI carte IA
-    free(@cartaia8),
-    free(@cartaia6),
-    free(@cartaia4),
-    free(@cartaia2),
-    free(@cartaia1),
-    free(@cartaia3),
-    free(@cartaia5),
-    free(@cartaia7),
-    free(@cartaia9),
+    free(@cartaia08),
+    free(@cartaia06),
+    free(@cartaia04),
+    free(@cartaia02),
+    free(@cartaia01),
+    free(@cartaia03),
+    free(@cartaia05),
+    free(@cartaia07),
+    free(@cartaia09),
 
     free(@cartaia17),
     free(@cartaia15),
@@ -107,15 +199,15 @@ setta_campo :-
     free(@cartaia18),
 
 
-    new(@cartaia8, box(68, 100)),
-    new(@cartaia6, box(68, 100)),
-    new(@cartaia4, box(68, 100)),
-    new(@cartaia2, box(68, 100)),
-    new(@cartaia1, box(68, 100)),
-    new(@cartaia3, box(68, 100)),
-    new(@cartaia5, box(68, 100)),
-    new(@cartaia7, box(68, 100)),
-    new(@cartaia9, box(68, 100)),
+    new(@cartaia08, box(68, 100)),
+    new(@cartaia06, box(68, 100)),
+    new(@cartaia04, box(68, 100)),
+    new(@cartaia02, box(68, 100)),
+    new(@cartaia01, box(68, 100)),
+    new(@cartaia03, box(68, 100)),
+    new(@cartaia05, box(68, 100)),
+    new(@cartaia07, box(68, 100)),
+    new(@cartaia09, box(68, 100)),
 
     new(@cartaia17, box(68,100)),
     new(@cartaia15, box(68,100)),
@@ -128,20 +220,20 @@ setta_campo :-
     new(@cartaia18, box(68,100)),
 
 
-    send(@dialog, display, @cartaia8, point(24, 19.6)),
-    send(@dialog, display, @cartaia6, point(24+Xoffset, 19.6)),
-    send(@dialog, display, @cartaia4, point(24+2*Xoffset, 19.6)),
-    send(@dialog, display, @cartaia2, point(24+3*Xoffset, 19.6)),
-    send(@dialog, display, @cartaia1, point(24+4*Xoffset, 19.6)),
-    send(@dialog, display, @cartaia3, point(24+5*Xoffset, 19.6)),
-    send(@dialog, display, @cartaia5, point(24+6*Xoffset, 19.6)),
-    send(@dialog, display, @cartaia7, point(24+7*Xoffset, 19.6)),
-    send(@dialog, display, @cartaia9, point(24+8*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia08, point(24, 19.6)),
+    send(@dialog, display, @cartaia06, point(24+Xoffset, 19.6)),
+    send(@dialog, display, @cartaia04, point(24+2*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia02, point(24+3*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia01, point(24+4*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia03, point(24+5*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia05, point(24+6*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia07, point(24+7*Xoffset, 19.6)),
+    send(@dialog, display, @cartaia09, point(24+8*Xoffset, 19.6)),
 
-    send(@cartaia8, displayed, @off),
-    send(@cartaia6, displayed, @off),
-    send(@cartaia7, displayed, @off),
-    send(@cartaia9, displayed, @off),
+    send(@cartaia08, displayed, @off),
+    send(@cartaia06, displayed, @off),
+    send(@cartaia07, displayed, @off),
+    send(@cartaia09, displayed, @off),
 
     send(@dialog, display, @cartaia17, point(24, 19.6+Yoffset)),
     send(@dialog, display, @cartaia15, point(24+Xoffset, 19.6+Yoffset)),
@@ -164,5 +256,34 @@ setta_campo :-
     send(@cartaia18, displayed, @off),
 
 
+    %% CARTE CENTRALI
+    free(@cartamazzo),
+    free(@cartagiocata),
+
+    new(@cartamazzo, box(68, 100)),
+    new(@cartagiocata, box(68,100)),
+
+    send(@dialog, display, @cartamazzo, point(345-Xoffset, 350-Yoffset/2)),
+    send(@dialog, display, @cartagiocata, point(355, 350-Yoffset/2)),
+
+
     true.
 
+
+
+crea_carte(Numero, Colore, X, Y, Carta) :-
+    new(Carta, box(68,100)),
+    send(Carta, fill_pattern, colour(Colore)),
+
+    term_string(Numero, String),
+
+    send(@dialog, display, Carta, point(X,Y)),
+
+
+    new(Testo, text(String)),
+    send(Testo, font, font(helvetica, bold, 20)),
+    get(Testo, width, TestoWidth),
+    get(Testo, height, TestoHeight),
+    TestoX is X + (68 - TestoWidth) / 2,
+    TestoY is Y + (100 - TestoHeight) / 2,
+    send(@dialog, display, Testo, point(TestoX, TestoY)).
