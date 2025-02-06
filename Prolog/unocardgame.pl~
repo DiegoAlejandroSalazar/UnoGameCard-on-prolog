@@ -362,7 +362,8 @@ gioca_carta :-
     carte_giocate([PrimaCarta|_]),
     writeln(PrimaCarta),
     writeln('--------------------------------------------------------------------------'),
-    writeln('Scegli carta da giocare(tipo card(3,red) oppure scrivi "pesca" per pescare una carta):'),
+    writeln('Scegli carta da giocare(tipo card(3,red)), oppure scrivi "pesca" per pescare una carta'),
+    writeln('Quando avrai una carta disponibile digita "uno":'),
     read(Carta_Giocata),
     (   Carta_Giocata = pesca
     ->  pesca_carte(1,1),
@@ -537,9 +538,9 @@ gioca_carta_ia :-
     controllo_uno,
     mano_giocatore2(ManoGiocatore2),
     carte_giocate(Carte_Giocate),
-    writeln('Carta al centro :'),
+    %writeln('Carta al centro :'),
     carte_giocate([PrimaCarta|_]),
-    writeln(PrimaCarta),
+    %writeln(PrimaCarta),
     writeln(''),
     %writeln('Mano IA: '),
    % writeln('--------------------------------------------------------------------------'),
@@ -595,6 +596,7 @@ turno_giocatore :-
     ;   writeln('Il tuo turno!'),
         gioca_carta,
         controlla_vittoria,
+        controllo_mazzo,
         turno_ia
     ).
 % contrario del truno giocatore.
@@ -611,9 +613,22 @@ turno_giocatore :-
     ;   writeln('Turno dell\'IA...'),
         gioca_carta_ia,
         controlla_vittoria,
+        controllo_mazzo,
         turno_giocatore
     ).
 
+controllo_mazzo :-
+    mazzo(Mazzo),
+    length(Mazzo,LunghezzaMazzo),
+    writeln(LunghezzaMazzo),
+    (   LunghezzaMazzo < 1
+    ->
+    lista_carte_randomizzata(NuovoMazzo),
+        retract(mazzo(Mazzo)),
+        assertz(mazzo(NuovoMazzo))
+    ;
+    true
+    ).
 % Controlla se le mani sono vuote e cambia la variabile dinamica
 % gioco_finito.
 controlla_vittoria :-

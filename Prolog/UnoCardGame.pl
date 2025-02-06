@@ -596,6 +596,7 @@ turno_giocatore :-
     ;   writeln('Il tuo turno!'),
         gioca_carta,
         controlla_vittoria,
+        controllo_mazzo,
         turno_ia
     ).
 % contrario del truno giocatore.
@@ -612,9 +613,22 @@ turno_giocatore :-
     ;   writeln('Turno dell\'IA...'),
         gioca_carta_ia,
         controlla_vittoria,
+        controllo_mazzo,
         turno_giocatore
     ).
 
+controllo_mazzo :-
+    mazzo(Mazzo),
+    length(Mazzo,LunghezzaMazzo),
+   % writeln(LunghezzaMazzo),
+    (   LunghezzaMazzo < 1
+    ->
+    lista_carte_randomizzata(NuovoMazzo),
+        retract(mazzo(Mazzo)),
+        assertz(mazzo(NuovoMazzo))
+    ;
+    true
+    ).
 % Controlla se le mani sono vuote e cambia la variabile dinamica
 % gioco_finito.
 controlla_vittoria :-
