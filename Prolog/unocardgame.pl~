@@ -253,7 +253,7 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     giocatore_attivo(GiocatoreAttivo),
     (   ValoreGiocato == +2 ->
         (   GiocatoreAttivo = 1 ->
-            writeln('IA: +2 carte pescate'),
+            writeln('IA pesca 2 carte'),
             writeln(''),
             pesca_carte(2, 2)
         ;
@@ -265,7 +265,7 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         (   GiocatoreAttivo = 1 ->
             cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
             pesca_carte(4, 2),
-            writeln('IA: +4 carte pescate'),
+            writeln('IA pesca 4 carte '),
             writeln('')
         ;
             cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
@@ -339,7 +339,8 @@ controllo_uno:-
         writeln('HAI DETTO UNO ANCHE SE NON AVEVI UNA SOLA CARTA!'),
             pesca_carte(2,1)
         ;
-        writeln('tutto apposto non hai detto uno senza motivo')
+        writeln('')
+       % writeln('tutto apposto non hai detto uno senza motivo')
         )
     ),
     retractall(detto_uno(_)),
@@ -388,7 +389,7 @@ gioca_carta :-
                      retract(carte_giocate(Carte_Giocate)),
                      assertz(carte_giocate(NuoveCarteGiocate)),
                      attiva_effetto(Carta_Giocata),
-                     writeln('Carta giocata correttamente. '),
+                     writeln('Carta giocata correttamente.'),
                      writeln('--------------------------------------------------------------------------'),
                      writeln('Nuova mano: '),
                      writeln('--------------------------------------------------------------------------'),
@@ -515,10 +516,10 @@ colore_massimo(Mano, ColoreMassimo) :-
     Blu is Blue+Blue2,
     Gialli is Yellow+Yellow2,
     ConteggiFinali = [red-Rossi,green-Verdi,blue-Blu,yellow-Gialli],
-    writeln(ConteggiFinali),
-    max_colore(ConteggiFinali,ColoreMassimo-ValoreMassimo),
-    writeln('ValoreMssimo scelto:'),
-    writeln(ValoreMassimo),
+    %writeln(ConteggiFinali),
+    max_colore(ConteggiFinali,ColoreMassimo-_),
+   % writeln('ValoreMssimo scelto:'),
+   % writeln(ValoreMassimo),
     writeln('Colore scelto:'),
     writeln(ColoreMassimo).
 
@@ -540,10 +541,10 @@ gioca_carta_ia :-
     carte_giocate([PrimaCarta|_]),
     writeln(PrimaCarta),
     writeln(''),
-    writeln('Mano IA: '),
-    writeln('--------------------------------------------------------------------------'),
-    writeln(ManoGiocatore2),
-    writeln('--------------------------------------------------------------------------'),
+    %writeln('Mano IA: '),
+   % writeln('--------------------------------------------------------------------------'),
+   % writeln(ManoGiocatore2),
+   % writeln('--------------------------------------------------------------------------'),
         miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
         carta_da_giocare_ia(CartaGiocata),
         nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
@@ -559,10 +560,10 @@ gioca_carta_ia :-
         writeln(''),
         writeln(CartaGiocata),
         writeln(''),
-        writeln('Nuova Mano IA:'),
-        writeln('--------------------------------------------------------------------------'),
-        writeln(NuovaMano2),
-        writeln('--------------------------------------------------------------------------'),
+       % writeln('Nuova Mano IA:'),
+       % writeln('--------------------------------------------------------------------------'),
+       % writeln(NuovaMano2),
+       % writeln('--------------------------------------------------------------------------'),
         retractall(carte_giocabili_ia(_)),
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
@@ -570,12 +571,12 @@ gioca_carta_ia :-
 gioca_carta_ia :-
     writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
     pesca_carte(1, 2),
-    mano_giocatore2(ManoGiocatore2),
-    writeln(''),
-    writeln('Mano IA: '),
-    writeln('--------------------------------------------------------------------------'),
-    writeln(ManoGiocatore2),
-    writeln('--------------------------------------------------------------------------').
+    %mano_giocatore2(ManoGiocatore2),
+    writeln('').
+   % writeln('Mano IA: '),
+   % writeln('--------------------------------------------------------------------------'),
+    %writeln(ManoGiocatore2),
+   % writeln('--------------------------------------------------------------------------').
 
 
 % Mette la variabile giocatore_attivo a 1 e controlla se il gioco è
