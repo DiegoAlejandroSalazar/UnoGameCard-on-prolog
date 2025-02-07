@@ -145,9 +145,6 @@ rimuovi_suffisso_2(Colore, Colore).
 
 
 
-
-
-
 setta_mano_giocatore(ManoGiocatore1):-
     findall(Valori,
              (member(card(Valori, _), ManoGiocatore1)),
@@ -175,35 +172,19 @@ setta_mano_giocatore(ManoGiocatore1):-
     ).
 
 
-
-distruggi_mano_giocatore :-
+distruggi_carte :-
     lista_X(ListaX),
     lista_Y(ListaY),
 
     forall(
         (
-        nth0(Indice,ListaX,PosizioneX),
-        nth0(Indice,ListaY,PosizioneY)),
-        (distruggi_carta(PosizioneX,PosizioneY),
-         flush_output)
-    ).
+        nth0(Indice, ListaX, PosizioneX),
+        nth0(Indice, ListaY, PosizioneY)),
+        (carta_bianca(PosizioneX, PosizioneY)
+        )).
 
-distruggi_carte :-
-    X is 68,
-    Y is 100,
+carta_bianca(X,Y) :-
+    new(Carta, box(68,100)),
+    send(Carta, fill_pattern, colour(white)),
 
-    findall( Carta, (
-                 get(@dialog, member, box, Carta),
-                 get(Carta, width, LarghezzaCarta),
-                 get(Carta, height, AltezzaCarta),
-                 LarghezzaCarta == X,
-                 AltezzaCarta == Y
-             ), ListaCarte),
-
-    distruggi_lista_carte(ListaCarte),
-    flush_output.
-
-distruggi_lista_carte([]).
-distruggi_lista_carte([Carta | RestoCarte]) :-
-    free(Carta),
-    distruggi_lista_carte([RestoCarte]).
+    send(@dialog, display, Carta, point(X,Y)).

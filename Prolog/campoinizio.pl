@@ -1,20 +1,20 @@
-lista_X([ 24,
-          24+73,
-          24+2*73,
+lista_X([ 24+4*73,
           24+3*73,
-          24+4*73,
           24+5*73,
+          24+2*73,
           24+6*73,
+          24+1*73,
           24+7*73,
-          24+8*73,
           24,
-          24+73,
-          24+2*73,
-          24+3*73,
+          24+8*73,
           24+4*73,
+          24+3*73,
           24+5*73,
+          24+2*73,
           24+6*73,
+          24+1*73,
           24+7*73,
+          24,
           24+8*73
         ]).
 
@@ -38,24 +38,24 @@ lista_Y([ 580,
           580-105
         ]).
 
-carta_definita(@carta01, @colore01, @testo01).
-carta_definita(@carta02, @colore02, @testo02).
-carta_definita(@carta03, @colore03, @testo03).
-carta_definita(@carta04, @colore04, @testo04).
-carta_definita(@carta05, @colore05, @testo05).
-carta_definita(@carta06, @colore06, @testo06).
-carta_definita(@carta07, @colore07, @testo07).
-carta_definita(@carta08, @colore08, @testo08).
-carta_definita(@carta09, @colore09, @testo09).
-carta_definita(@carta10, @colore10, @testo10).
-carta_definita(@carta11, @colore11, @testo11).
-carta_definita(@carta12, @colore12, @testo12).
-carta_definita(@carta13, @colore13, @testo13).
-carta_definita(@carta14, @colore14, @testo14).
-carta_definita(@carta15, @colore15, @testo15).
-carta_definita(@carta16, @colore16, @testo16).
-carta_definita(@carta17, @colore17, @testo17).
-carta_definita(@carta18, @colore18, @testo1).
+carta_definita(@carta01, @testo01).
+carta_definita(@carta02, @testo02).
+carta_definita(@carta03, @testo03).
+carta_definita(@carta04, @testo04).
+carta_definita(@carta05, @testo05).
+carta_definita(@carta06, @testo06).
+carta_definita(@carta07, @testo07).
+carta_definita(@carta08, @testo08).
+carta_definita(@carta09, @testo09).
+carta_definita(@carta10, @testo10).
+carta_definita(@carta11, @testo11).
+carta_definita(@carta12, @testo12).
+carta_definita(@carta13, @testo13).
+carta_definita(@carta14, @testo14).
+carta_definita(@carta15, @testo15).
+carta_definita(@carta16, @testo16).
+carta_definita(@carta17, @testo17).
+carta_definita(@carta18, @testo18).
 
 carta_ia_definita(@cartaIA01).
 carta_ia_definita(@cartaIA02).
@@ -206,7 +206,6 @@ campo_inizio :-
 
     PositionXmazzo is 355,
     PositionYmazzo is 350-Yoffset/2,
-
 
 
     free(@carta01),
@@ -374,7 +373,7 @@ campo_inizio :-
     send(@dialog, display, @cartaIA17, point(Position17XIA,Position17YIA)),
     send(@dialog, display, @cartaIA18, point(Position18XIA,Position18YIA)),
 
-    send(@dialog, display, @cartagiocata, point(PositionXgiocata,PositionYgiocata)),
+    send(@dialog, display, @cartagiocata,point(PositionXgiocata,PositionYgiocata)),
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
 
 
@@ -382,7 +381,7 @@ campo_inizio :-
 
 
 
-
+    %%%%%%%%% cose per l'input con il clic, chiedere a laura %%%%%%%%%
    %% forall(casella_punteggio_g1(C),
           % (
                %send(C, recogniser, click_gesture(left, '', single, message(@prolog, click_assegna_punteggio, C)))
@@ -411,60 +410,9 @@ crea_carte(Numero, Colore, X, Y) :-
     send(@dialog, display, Carta, point(X,Y)),
 
     new(Testo, text(String)),
-    send(Testo, font, font(helvetica, bold, 20)),
+    send(Testo, font, font(times, bold, 20)),
     get(Testo, width, TestoWidth),
     get(Testo, height, TestoHeight),
     TestoX is X + (68 - TestoWidth) / 2,
     TestoY is Y + (100 - TestoHeight) / 2,
     send(@dialog, display, Testo, point(TestoX, TestoY)).
-
-
-
-
-
-pulisci_campo :-
-    forall(casella_punteggio_g1(Casella),
-           (   casella_punteggio(Casella, Punti, Categoria),
-               (   categoria_utilizzata(player, Categoria); categoria_bloccata(pc, Categoria)
-               ->  true
-               ;   send(Casella, fill_pattern, colour(white)),
-                   send(Punti, string, '')
-               )
-           )
-          ),
-    forall(casella_punteggio_g2(Casella),
-           (   casella_punteggio(Casella, Punti, Categoria),
-               (   categoria_utilizzata(pc, Categoria); categoria_bloccata(player, Categoria)
-               ->  true
-               ;   send(Casella, fill_pattern, colour(white)),
-                   send(Punti, string, '')
-               )
-           )
-          ).
-
-elimina_campo :-
-    forall(box_categoria(Box, Testo),
-           (
-               free(Box),
-               free(Testo)
-           )
-          ),
-
-    forall(numero_dado(Box, Numero),
-           (
-               free(Box),
-               free(Numero)
-           )
-          ),
-
-    free(@casella_g1_nome),
-    free(@casella_g2_nome),
-    free(@text_g1_nome),
-    free(@text_g2_nome),
-
-    forall(casella_punteggio(Casella, TestoPunti, _),
-           (
-               free(Casella),
-               free(TestoPunti)
-           )
-          ).
