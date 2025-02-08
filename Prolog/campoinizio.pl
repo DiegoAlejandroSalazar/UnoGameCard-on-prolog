@@ -61,6 +61,8 @@ lista_Y_IA([ 20,
 
 
 
+
+
 campo_inizio :-
     send(@dialog, background, colour(white)),
 

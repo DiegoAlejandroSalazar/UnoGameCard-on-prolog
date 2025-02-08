@@ -102,3 +102,4 @@ campo_inizio :-
 
 
 
+%predicato bottone pesca

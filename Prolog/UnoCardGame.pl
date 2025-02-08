@@ -120,6 +120,7 @@ card(stop, yellow2).
 :-dynamic turno_bloccato/1.
 :-dynamic detto_uno/1.
 :-dynamic gioco_finito/1.
+:-dynamic boxes_giocatore/3.
 
 % Inizializzazione del gioco
 % 1. svuotamento variabili dinamiche,
@@ -138,6 +139,7 @@ inizializza_gioco :-
     retractall(turno_bloccato(_)),
     retractall(detto_uno(_)),
     retractall(gioco_finito(_)),
+    retractall(boxes_giocatore(_,_,_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
     assertz(mazzo(Mazzo)),
@@ -154,6 +156,7 @@ inizializza_gioco :-
     assertz(turno_bloccato(no)),
     assertz(detto_uno(no)),
     assertz(gioco_finito(no)),
+    %assertz(boxes_giocatore([])),
     setta_mano_giocatore,
     setta_mano_IA.
 

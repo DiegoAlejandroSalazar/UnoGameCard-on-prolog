@@ -87,10 +87,6 @@ setta_mano_giocatore:-
         nth0(Indice, ListaX, PosizioneX),
         nth0(Indice, ListaY, PosizioneY)),
         (crea_carte(Valore, Colore, PosizioneX, PosizioneY),
-         writeln(Valore),
-         writeln(Colore),
-         writeln(PosizioneX),
-         writeln(PosizioneY),
          flush_output)
     ).
 
@@ -160,6 +156,9 @@ crea_carte(Valore, Colore, X, Y) :-
     send(Carta, radius, 7),
     send(@dialog, display, Carta, point(X,Y)),
 
+    send(Carta, recogniser, click_gesture(left, '', single,
+                 message(@prolog, gestisci_click, Carta))),
+
     term_string(Valore, String),
     new(Testo, text(String)),
     send(Testo, font, font(helvetica, bold, 20)),
@@ -168,8 +167,16 @@ crea_carte(Valore, Colore, X, Y) :-
     get(Testo, height, TestoHeight),
     TestoX is X + (68 - TestoWidth) / 2,
     TestoY is Y + (100 - TestoHeight) / 2,
-    send(@dialog, display, Testo, point(TestoX, TestoY)).
+    send(@dialog, display, Testo, point(TestoX, TestoY)),
 
+    assert(boxes_giocatore(Carta,Valore,Colore)).
+    %boxes_giocatore(CarteGiocabili),
+    %CartaLista = [Carta,Valore,Colore],
+    %CartaNuova = [CartaLista],
+    %append(CartaNuova, CarteGiocabili, NuoveCarteGiocabili),
+    %retractall(boxes_giocatore([])),
+    %assertz(boxes_giocatore(NuoveCarteGiocabili)),
+    %writeln(NuoveCarteGiocabili).
 
 crea_carta_giocata(Valore,Colore) :-
     X is 345-73,
@@ -197,3 +204,20 @@ crea_carta_giocata(Valore,Colore) :-
     TestoX is X + (68 - TestoWidth) / 2,
     TestoY is Y + (100 - TestoHeight) / 2,
     send(@dialog, display, Testo, point(TestoX, TestoY)).
+
+
+crea_box(Valore, Colore) :-
+    new(Box, box(200, 100)),
+    send(Box, fill_pattern, colour(Colore)),
+    assert(mia_variabile_box(Box, Valore, Colore)),
+    send(@dialog, display, Box, point(50, 50)),
+    send(Box, recogniser, click_gesture(left, '', single,
+                    message(@prolog, gestisci_click, Box))),
+    Box.
+
+
+
+gestisci_click(Carta) :-
+    boxes_giocatore(Carta,Valore,Colore),
+    writeln(Valore),
+    writeln(Colore).
