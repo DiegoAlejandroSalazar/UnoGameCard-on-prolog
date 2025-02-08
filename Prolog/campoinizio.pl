@@ -66,30 +66,20 @@ campo_inizio :-
 
     LarghezzaCarta is 68,
     AltezzaCarta is 100,
-    Xoffset is 73,
     Yoffset is 105,
-
-    PositionXgiocata is 345-Xoffset,
-    PositionYgiocata is 350-Yoffset/2,
 
     PositionXmazzo is 355,
     PositionYmazzo is 350-Yoffset/2,
 
     free(@cartamazzo),
-    free(@cartagiocata),
 
-    new(@cartagiocata,box(LarghezzaCarta,AltezzaCarta)),
     new(@cartamazzo, box(LarghezzaCarta,AltezzaCarta)),
 
-    send(@cartagiocata, fill_pattern, colour(white)),
     send(@cartamazzo, fill_pattern, colour(black)),
+    send(@cartamazzo, pen, 0),
+    send(@cartamazzo, radius, 7),
 
-    send(@dialog, display, @cartagiocata,point(PositionXgiocata,PositionYgiocata)),
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
-
-
-
-
 
     %%%%%%%%% cose per l'input con il clic, chiedere a laura %%%%%%%%%
    %% forall(casella_punteggio_g1(C),
@@ -109,35 +99,6 @@ campo_inizio :-
 
 
 
-crea_carte(Valore, Colore, X, Y) :-
-    new(Carta, box(68,100)),
-    send(Carta, fill_pattern, colour(Colore)),
-    send(@dialog, display, Carta, point(X,Y)),
 
-    term_string(Valore, String),
-    new(Testo, text(String)),
-    send(Testo, font, font(helvetica, bold, 20)),
-    get(Testo, width, TestoWidth),
-    get(Testo, height, TestoHeight),
-    TestoX is X + (68 - TestoWidth) / 2,
-    TestoY is Y + (100 - TestoHeight) / 2,
-    send(@dialog, display, Testo, point(TestoX, TestoY)).
-
-crea_carta_giocata(Valore,Colore) :-
-    X is 345-73,
-    Y is 350-105/2,
-
-    new(Carta, box(68,100)),
-    send(Carta, fill_pattern, colour(Colore)),
-    send(@dialog, display, Carta, point(X,Y)),
-
-    term_string(Valore, String),
-    new(Testo, text(String)),
-    send(Testo, font, font(helvetica, bold, 20)),
-    get(Testo, width, TestoWidth),
-    get(Testo, height, TestoHeight),
-    TestoX is X + (68 - TestoWidth) / 2,
-    TestoY is Y + (100 - TestoHeight) / 2,
-    send(@dialog, display, Testo, point(TestoX, TestoY)).
 
 

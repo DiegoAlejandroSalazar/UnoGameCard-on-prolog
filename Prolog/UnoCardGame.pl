@@ -1,3 +1,5 @@
+:- [gioco].
+
 % Definizione carte
 card(1,red).
 card(2, red).
@@ -151,7 +153,9 @@ inizializza_gioco :-
     assertz(giocatore_attivo(1)),
     assertz(turno_bloccato(no)),
     assertz(detto_uno(no)),
-    assertz(gioco_finito(no)).
+    assertz(gioco_finito(no)),
+    setta_mano_giocatore,
+    setta_mano_IA.
 
 % Funzione per ottenere lista di carte.
 lista_carte(CardList) :-
@@ -303,14 +307,22 @@ pesca_carte(N,P) :-
         retract(mazzo(Mazzo)),
         assertz(mazzo(Rimanenti)),
         retract(mano_giocatore2(ManoGiocatore2)),
-        assertz(mano_giocatore2(NuovaMano))
+        assertz(mano_giocatore2(NuovaMano)),
+        distruggi_carte_IA,
+        setta_mano_IA
     ;
     append(ManoGiocatore1,PrimeCarte,NuovaMano),
         retract(mazzo(Mazzo)),
         assertz(mazzo(Rimanenti)),
         retract(mano_giocatore1(ManoGiocatore1)),
-        assertz(mano_giocatore1(NuovaMano))
+        assertz(mano_giocatore1(NuovaMano)),
+        distruggi_carte_giocatore,
+        setta_mano_giocatore
     ).
+
+bottone_pesca:-
+    pesca_carte(1,1).
+
 
 % Funzione che cambia il valore della variabile dinamica.
 bottone_uno :-
