@@ -85,6 +85,7 @@ inizializza_gioco :-
     % Richiamo distribuisci carte e modifico le mani e le carte giocati
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
     setta_mano_giocatore(ManoGiocatore1),
+    setta_mano_IA(ManoGiocatore2),
     assertz(mano_giocatore1(ManoGiocatore1)),
     %Carta = [card(+4,cambio)],
     %append(Carta,ManoGiocatore2,ManoGiocatore21),
@@ -172,7 +173,30 @@ setta_mano_giocatore(ManoGiocatore1):-
     ).
 
 
-distruggi_carte :-
+setta_mano_IA(ManoGiocatore2) :-
+    lista_X(ListaXIA),
+    lista_Y_IA(ListaYIA),
+
+    findall(CartaIA,
+             (member(card(_, _), ManoGiocatore2)),
+            ListaCarteIA),
+
+    forall(
+        (
+        nth0(Indice, ListaCarteIA, CartaIA),
+        nth0(Indice, ListaXIA, PosizioneXIA),
+        nth0(Indice, ListaYIA, PosizioneYIA)),
+
+        (carta_generica(black,PosizioneXIA,PosizioneYIA)
+        )
+    ).
+
+
+
+
+
+
+distruggi_carte_giocatore :-
     lista_X(ListaX),
     lista_Y(ListaY),
 
@@ -180,11 +204,13 @@ distruggi_carte :-
         (
         nth0(Indice, ListaX, PosizioneX),
         nth0(Indice, ListaY, PosizioneY)),
-        (carta_bianca(PosizioneX, PosizioneY)
+        (carta_generica(white, PosizioneX, PosizioneY)
         )).
 
-carta_bianca(X,Y) :-
+carta_generica(Colore,X,Y) :-
     new(Carta, box(68,100)),
-    send(Carta, fill_pattern, colour(white)),
+    send(Carta, pen, 0),
+    send(Carta, fill_pattern, colour(Colore)),
 
-    send(@dialog, display, Carta, point(X,Y)).
+    send(@dialog, display, Carta, point(X,Y)),
+    flush_output.
