@@ -99,42 +99,6 @@ campo_inizio :-
 
 
 
-crea_carte(Valore, Colore, X, Y) :-
-    new(Carta, box(68,100)),
-    send(Carta, fill_pattern, colour(Colore)),
-    send(Carta, pen, 0),
-    send(Carta, radius, 7),
-    send(@dialog, display, Carta, point(X,Y)),
 
-    term_string(Valore, String),
-    new(Testo, text(String)),
-    send(Testo, font, font(helvetica, bold, 20)),
-    send(Testo, colour, colour(white)),
-    get(Testo, width, TestoWidth),
-    get(Testo, height, TestoHeight),
-    TestoX is X + (68 - TestoWidth) / 2,
-    TestoY is Y + (100 - TestoHeight) / 2,
-    send(@dialog, display, Testo, point(TestoX, TestoY)).
-
-
-crea_carta_giocata(Valore,Colore) :-
-    X is 345-73,
-    Y is 350-105/2,
-
-    new(Carta, box(68,100)),
-    send(Carta, fill_pattern, colour(Colore)),
-    send(Carta, pen, 0),
-    send(Carta, radius, 7),
-    send(@dialog, display, Carta, point(X,Y)),
-
-    term_string(Valore, String),
-    new(Testo, text(String)),
-    send(Testo, font, font(helvetica, bold, 20)),
-    send(Testo, colour, colour(white)),
-    get(Testo, width, TestoWidth),
-    get(Testo, height, TestoHeight),
-    TestoX is X + (68 - TestoWidth) / 2,
-    TestoY is Y + (100 - TestoHeight) / 2,
-    send(@dialog, display, Testo, point(TestoX, TestoY)).
 
 
