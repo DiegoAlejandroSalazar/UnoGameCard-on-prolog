@@ -10,6 +10,19 @@ start_game :-
     %send(@dialog, done_message, message(@prolog, esci_dal_gioco)),
     send(@dialog, background, white),
 
+     % Device.
+    free(@device),
+    new(@device, device),
+    send(@dialog, display, @device, point(0,0)),
+
+    % inserisco l'immagine come sfondo
+    source_file(start_game, File),
+    rimuovi_file_da_percorso(File, Risultato),
+    directory_file_path(Risultato, '/Immagini/background.jpg', NuovoPercorso),
+    new(@imagefile, image(NuovoPercorso)),
+    new(Bitmap, bitmap(@imagefile)),
+    send(@device, display, Bitmap),
+    send(Bitmap, center, @device?center),
 
     %inserisco l'immagine come sfondo
     %source_file(start_app, File),
@@ -55,6 +68,8 @@ start_game :-
     send(@dialog, display, @rulesbutton, point(XRulesbutton,600)),
     send(@dialog, open).
 
+rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
+    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
 
 start_the_game :-
     send(@dialog, background, white),
@@ -62,15 +77,19 @@ start_the_game :-
     free(@rulesbutton),
 
     campo_inizio,
+    inizializza_gioco,
 
     writeln('Il gioco è iniziato!').
 
 
-
 setta_mano_giocatore:-
     mano_giocatore1(ManoGiocatore1),
+
+    length(ManoGiocatore1, IndiceMax),
+    writeln('pisello'),
+    writeln(ManoGiocatore1),
     findall(Valori,
-             (member(card(Valori, _), ManoGiocatore1)),
+             member(card(Valori, _), ManoGiocatore1),
             ListaValori),
     findall(Colori,
              (member(card(_, ColoreConSuff),ManoGiocatore1),
@@ -80,14 +99,17 @@ setta_mano_giocatore:-
     lista_X(ListaX),
     lista_Y(ListaY),
 
+
+    IndiceMaxNuovo is IndiceMax-1,
     forall(
+        between(0, IndiceMaxNuovo, Indice),
         (
-        nth0(Indice, ListaValori, Valore),
-        nth0(Indice, ListaColori, Colore),
-        nth0(Indice, ListaX, PosizioneX),
-        nth0(Indice, ListaY, PosizioneY)),
-        (crea_carte(Valore, Colore, PosizioneX, PosizioneY),
-         flush_output)
+            nth0(Indice, ListaValori, Valore),
+            nth0(Indice, ListaColori, Colore),
+            nth0(Indice, ListaX, PosizioneX),
+            nth0(Indice, ListaY, PosizioneY),
+            (crea_carte(Valore, Colore, PosizioneX, PosizioneY),
+             flush_output))
     ).
 
 setta_mano_IA :-
@@ -110,16 +132,14 @@ setta_mano_IA :-
     ).
 
 
-distruggi_carte_giocatore :-
-    lista_X(ListaX),
-    lista_Y(ListaY),
+libera_tutte_le_carte :-
+    forall(boxes_giocatore(Box, _Valore, _Colore), free(Box)),
+    retractall(boxes_giocatore(_,_,_)).
 
-    forall(
-        (
-        nth0(Indice, ListaX, PosizioneX),
-        nth0(Indice, ListaY, PosizioneY)),
-        (carta_generica(white, PosizioneX, PosizioneY)
-        )).
+
+
+
+
 
 distruggi_carte_IA :-
     lista_X(ListaX),
@@ -170,17 +190,13 @@ crea_carte(Valore, Colore, X, Y) :-
     send(@dialog, display, Testo, point(TestoX, TestoY)),
 
     assert(boxes_giocatore(Carta,Valore,Colore)).
-    %boxes_giocatore(CarteGiocabili),
-    %CartaLista = [Carta,Valore,Colore],
-    %CartaNuova = [CartaLista],
-    %append(CartaNuova, CarteGiocabili, NuoveCarteGiocabili),
-    %retractall(boxes_giocatore([])),
-    %assertz(boxes_giocatore(NuoveCarteGiocabili)),
-    %writeln(NuoveCarteGiocabili).
 
-crea_carta_giocata(Valore,Colore) :-
+
+crea_carta_giocata :-
     X is 345-73,
     Y is 350-105/2,
+
+    carte_giocate([card(Valore,Colore) | _ ]),
 
     new(Carta, box(68,100)),
 
@@ -206,18 +222,43 @@ crea_carta_giocata(Valore,Colore) :-
     send(@dialog, display, Testo, point(TestoX, TestoY)).
 
 
-crea_box(Valore, Colore) :-
-    new(Box, box(200, 100)),
-    send(Box, fill_pattern, colour(Colore)),
-    assert(mia_variabile_box(Box, Valore, Colore)),
-    send(@dialog, display, Box, point(50, 50)),
-    send(Box, recogniser, click_gesture(left, '', single,
-                    message(@prolog, gestisci_click, Box))),
-    Box.
-
-
-
 gestisci_click(Carta) :-
     boxes_giocatore(Carta,Valore,Colore),
-    writeln(Valore),
-    writeln(Colore).
+    carte_giocate([PrimaCarta|_]),
+    % carte_giocate(CarteGiocate),
+    % mano_giocatore1(ManoGiocatore1),
+    % writeln(PrimaCarta),
+
+    (
+        carta_valida(card(Valore,Colore),PrimaCarta)
+          -> gioca_carta(Valore,Colore),
+          %send(Carta, displayed, @off),
+          %setta_mano_giocatore,
+          %writeln('heehee'),
+          crea_carta_giocata,
+          %free(Carta),
+          %writeln('yeet'),
+          raccolta_carte(ListaCarte),
+          writeln(ListaCarte),
+          retract(boxes_giocatore(Carta,Valore,Colore))
+    ;
+    writeln('carta non valida'))
+    .
+
+
+%    boxes_giocatore(Carta,Valore,Colore),
+%    valida(Valida),
+
+%    gioca_carta(Valore,Colore),
+%    writeln(Valida),
+%    (   Valida = true
+%     -> retract(valida(_)),
+%       assertz(valida(false)),
+%       writeln(Valida),
+%       free(Carta),
+%       retract(boxes_giocatore(Carta,Valore,Colore))).
+
+raccolta_carte(ListaCarte) :-
+    findall(boxes_giocatore(Carta, Valore, Colore),
+            boxes_giocatore(Carta, Valore, Colore),
+            ListaCarte).
