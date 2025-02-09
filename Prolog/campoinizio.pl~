@@ -1,20 +1,20 @@
-lista_X([ 24+4*73,
-          24+3*73,
-          24+5*73,
+lista_X([ 24,
+          24+73,
           24+2*73,
-          24+6*73,
-          24+1*73,
-          24+7*73,
-          24,
-          24+8*73,
+          24+3*73,
           24+4*73,
-          24+3*73,
           24+5*73,
-          24+2*73,
           24+6*73,
-          24+1*73,
           24+7*73,
+          24+8*73,
           24,
+          24+73,
+          24+2*73,
+          24+3*73,
+          24+4*73,
+          24+5*73,
+          24+6*73,
+          24+7*73,
           24+8*73
         ]).
 
@@ -82,6 +82,19 @@ campo_inizio :-
     send(@cartamazzo, radius, 7),
 
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
+
+
+    % Bottone per pescare una carta
+    free(@pescaButton),
+    new(@pescaButton, button('Pesca', message(@prolog, pesca_carte, 1, 1))),
+    send(@pescaButton, size, size(200, 50)), % Imposta la dimensione del bottone
+    send(@pescaButton, font, font(helvetica, bold, 20)), % Modifica il font del bottone
+    %get(@pescaButton, size, size(Pbw, _)),
+    %get(@dialog, size, size(W, _)),
+    %XPescaButton is (W - Pbw) / 2,
+    PositionXButton is PositionXmazzo-50,
+    send(@dialog, display, @pescaButton, point(PositionXButton, PositionYmazzo)),
+
 
     %%%%%%%%% cose per l'input con il clic, chiedere a laura %%%%%%%%%
    %% forall(casella_punteggio_g1(C),

@@ -83,6 +83,19 @@ campo_inizio :-
 
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
 
+
+    % Bottone per pescare una carta
+    free(@pescaButton),
+    new(@pescaButton, button('Pesca', message(@prolog, pesca_carte, 1, 1))),
+    send(@pescaButton, size, size(200, 50)), % Imposta la dimensione del bottone
+    send(@pescaButton, font, font(helvetica, bold, 20)), % Modifica il font del bottone
+    %get(@pescaButton, size, size(Pbw, _)),
+    %get(@dialog, size, size(W, _)),
+    %XPescaButton is (W - Pbw) / 2,
+    PositionXButton is PositionXmazzo+50,
+    send(@dialog, display, @pescaButton, point(PositionXButton, PositionYmazzo)),
+
+
     %%%%%%%%% cose per l'input con il clic, chiedere a laura %%%%%%%%%
    %% forall(casella_punteggio_g1(C),
           % (

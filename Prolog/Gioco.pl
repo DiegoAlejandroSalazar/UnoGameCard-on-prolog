@@ -5,6 +5,7 @@
 start_game :-
     free(@dialog), % @ prende indirizzo di memoria
     % creo finestra
+
     new(@dialog, dialog('Uno e mezzo')),
     send(@dialog, size, size(700,700)),
     %send(@dialog, done_message, message(@prolog, esci_dal_gioco)),
@@ -18,7 +19,9 @@ start_game :-
     % inserisco l'immagine come sfondo
     source_file(start_game, File),
     rimuovi_file_da_percorso(File, Risultato),
-    directory_file_path(Risultato, '/Immagini/background.jpg', NuovoPercorso),
+    directory_file_path(Risultato, '/Immagini/background.jpeg', NuovoPercorso),
+    %directory_file_path(Risultato, '/Immagini/backgroundGamePlay.jpg', NuovoPercorso),
+    %free(@imagefile),
     new(@imagefile, image(NuovoPercorso)),
     new(Bitmap, bitmap(@imagefile)),
     send(@device, display, Bitmap),
@@ -83,11 +86,11 @@ start_the_game :-
 
 
 setta_mano_giocatore:-
+    rimuovi_tutte_carte,
     mano_giocatore1(ManoGiocatore1),
-
+    %writeln('palle'),
+    %writeln(ManoGiocatore1),
     length(ManoGiocatore1, IndiceMax),
-    writeln('pisello'),
-    writeln(ManoGiocatore1),
     findall(Valori,
              member(card(Valori, _), ManoGiocatore1),
             ListaValori),
@@ -132,14 +135,6 @@ setta_mano_IA :-
     ).
 
 
-libera_tutte_le_carte :-
-    forall(boxes_giocatore(Box, _Valore, _Colore), free(Box)),
-    retractall(boxes_giocatore(_,_,_)).
-
-
-
-
-
 
 distruggi_carte_IA :-
     lista_X(ListaX),
@@ -169,6 +164,12 @@ crea_carte(Valore, Colore, X, Y) :-
     ->
     send(Carta, fill_pattern, colour(orange))
     ;
+    (
+        Colore = cambio
+    ->
+        send(Carta, fill_pattern, colour(black))
+    )
+    ;
     send(Carta, fill_pattern, colour(Colore))
     ),
 
@@ -188,8 +189,13 @@ crea_carte(Valore, Colore, X, Y) :-
     TestoX is X + (68 - TestoWidth) / 2,
     TestoY is Y + (100 - TestoHeight) / 2,
     send(@dialog, display, Testo, point(TestoX, TestoY)),
-
-    assert(boxes_giocatore(Carta,Valore,Colore)).
+    boxes_giocatore(ListaBox),
+    Box = [Carta,Testo,Valore,Colore],
+    append([Box],ListaBox,NuovaListaBox),
+    retract(boxes_giocatore(_)),
+    assertz(boxes_giocatore(NuovaListaBox)),
+    writeln(''),
+    writeln(NuovaListaBox).
 
 
 crea_carta_giocata :-
@@ -197,14 +203,13 @@ crea_carta_giocata :-
     Y is 350-105/2,
 
     carte_giocate([card(Valore,Colore) | _ ]),
-
     new(Carta, box(68,100)),
-
-    (   Colore = yellow
+    rimuovi_suffisso_2(Colore,ColoreEffettivo),
+    (   ColoreEffettivo = yellow
     ->
     send(Carta, fill_pattern, colour(orange))
     ;
-    send(Carta, fill_pattern, colour(Colore))
+    send(Carta, fill_pattern, colour(ColoreEffettivo))
     ),
 
     send(Carta, pen, 0),
@@ -223,42 +228,60 @@ crea_carta_giocata :-
 
 
 gestisci_click(Carta) :-
-    boxes_giocatore(Carta,Valore,Colore),
+    boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
-    % carte_giocate(CarteGiocate),
-    % mano_giocatore1(ManoGiocatore1),
-    % writeln(PrimaCarta),
-
+    cerca_carta(Carta, ListaBox,Valore,Colore),
     (
         carta_valida(card(Valore,Colore),PrimaCarta)
-          -> gioca_carta(Valore,Colore),
-          %send(Carta, displayed, @off),
-          %setta_mano_giocatore,
-          %writeln('heehee'),
+          ->
+          writeln('carta valida'),
+          gioca_carta(card(Valore,Colore)),
+          writeln('carta Giocata'),
           crea_carta_giocata,
-          %free(Carta),
-          %writeln('yeet'),
-          raccolta_carte(ListaCarte),
-          writeln(ListaCarte),
-          retract(boxes_giocatore(Carta,Valore,Colore))
+          writeln('PRIMA DEL FREE'),
+          writeln(ListaBox),
+          cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
+          retract(boxes_giocatore(_)),
+          assertz(boxes_giocatore(NuovaListaBox)),
+          writeln('DOPO DEL FREE'),
+          writeln(NuovaListaBox),
+          setta_mano_giocatore
     ;
-    writeln('carta non valida'))
-    .
+    writeln('carta non valida')
+    ).
 
+% Cerca la carta cliccata all'interno della lista
+cerca_carta(CartaCliccata, [[CartaCliccata, Testo, Valore, Colore]|_],Valore,Colore) :-
+    writeln('Carta trovata: '),
+    format('Carta: ~w, Testo: ~w, Valore: ~w, Colore: ~w~n', [CartaCliccata, Testo, Valore, Colore]), !.
 
-%    boxes_giocatore(Carta,Valore,Colore),
-%    valida(Valida),
+cerca_carta(CartaCliccata, [_|Rest],Valore,Colore) :-
+    cerca_carta(CartaCliccata, Rest,Valore,Colore).
 
-%    gioca_carta(Valore,Colore),
-%    writeln(Valida),
-%    (   Valida = true
-%     -> retract(valida(_)),
-%       assertz(valida(false)),
-%       writeln(Valida),
-%       free(Carta),
-%       retract(boxes_giocatore(Carta,Valore,Colore))).
+cerca_e_rimuovi_carta(CartaCliccata, [[CartaCliccata, Testo, Valore, Colore]|Rest], Rest) :-
+    writeln('Carta trovata e rimossa: '),
+    format('Carta: ~w, Testo: ~w, Valore: ~w, Colore: ~w~n', [CartaCliccata, Testo, Valore, Colore]),
+    % Libera (rimuove) gli elementi grafici
+    free(CartaCliccata),
+    free(Testo), !.
 
-raccolta_carte(ListaCarte) :-
-    findall(boxes_giocatore(Carta, Valore, Colore),
-            boxes_giocatore(Carta, Valore, Colore),
-            ListaCarte).
+cerca_e_rimuovi_carta(CartaCliccata, [Altro|Rest], [Altro|NuovoRest]) :-
+    cerca_e_rimuovi_carta(CartaCliccata, Rest, NuovoRest).
+
+    % Predicato per rimuovere tutte le carte
+rimuovi_tutte_carte :-
+    boxes_giocatore(ListaBox),
+    writeln('Rimuovendo tutte le carte...'),
+    retract(boxes_giocatore(_)), % Rimuove la lista corrente
+    assertz(boxes_giocatore([])), % Imposta una nuova lista vuota
+    rimuovi_tutte_carte_lista(ListaBox).
+
+% Predicato per rimuovere tutte le carte dalla lista
+rimuovi_tutte_carte_lista([]) :-
+    writeln('Tutte le carte sono state rimosse.').
+
+rimuovi_tutte_carte_lista([[Carta, Testo, _, _] | Rest]) :-
+    free(Carta), % Libera (rimuove) la carta dalla finestra grafica
+    free(Testo), % Libera (rimuove) il testo dalla finestra grafica
+    rimuovi_tutte_carte_lista(Rest).
+

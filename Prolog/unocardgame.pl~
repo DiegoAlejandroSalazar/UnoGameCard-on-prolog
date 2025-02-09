@@ -120,7 +120,8 @@ card(stop, yellow2).
 :-dynamic turno_bloccato/1.
 :-dynamic detto_uno/1.
 :-dynamic gioco_finito/1.
-:-dynamic boxes_giocatore/3.
+:-dynamic box_giocatore/4.
+:-dynamic boxes_giocatore/1.
 :-dynamic valida/1.
 
 % Inizializzazione del gioco
@@ -140,7 +141,8 @@ inizializza_gioco :-
     retractall(turno_bloccato(_)),
     retractall(detto_uno(_)),
     retractall(gioco_finito(_)),
-    retractall(boxes_giocatore(_,_,_)),
+    retractall(box_giocatore(_,_,_,_)),
+    retractall(boxes_giocatore(_)),
     retractall(valida(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
@@ -148,8 +150,6 @@ inizializza_gioco :-
     % Richiamo distribuisci carte e modifico le mani e le carte giocati
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
     assertz(mano_giocatore1(ManoGiocatore1)),
-    %Carta = [card(+4,cambio)],
-    %append(Carta,ManoGiocatore2,ManoGiocatore21),
     assertz(mano_giocatore2(ManoGiocatore2)),
     assertz(carte_giocate(Carte_Giocate)),
     assertz(carte_giocabili_ia([])),
@@ -159,7 +159,8 @@ inizializza_gioco :-
     assertz(detto_uno(no)),
     assertz(gioco_finito(no)),
     assertz(valida(true)),
-    %assertz(boxes_giocatore([])),
+    assertz(boxes_giocatore([])),
+    assert(box_giocatore(_,_,_,_)),
     setta_mano_giocatore,
     setta_mano_IA,
     crea_carta_giocata.
@@ -180,9 +181,13 @@ lista_carte_randomizzata(Mazzo) :-
     random_permutation(ListaCarte, Mazzo).
 
 % Funzione per prendere le prime N carte dal Mazzo.
-prendi_prime_n_carte(N, Mazzo, PrimeCarte, Rimanenti) :-
+prendi_prime_n_carte(N, Mazzo, PrimeCarteSenzaSuffisso, Rimanenti) :-
     length(PrimeCarte, N),  % Crea una lista di lunghezza N
-    append(PrimeCarte, Rimanenti, Mazzo).  % Dividi la lista in PrimeCarte e Rimanenti
+    append(PrimeCarte, Rimanenti, Mazzo),  % Dividi la lista in PrimeCarte e Rimanenti
+    maplist(rimuovi_suffisso_carta, PrimeCarte, PrimeCarteSenzaSuffisso).
+
+rimuovi_suffisso_carta(card(Valore, Colore), card(Valore, ColoreSenzaSuffisso)) :-
+    rimuovi_suffisso_2(Colore, ColoreSenzaSuffisso).
 
 % Verifica che la carta non sia una cambio altrimenti ne cerca un altra.
 prendi_carta_valida([Carta | Resto], [Carta], Resto) :-
@@ -369,24 +374,23 @@ controllo_uno:-
 % nella mano e attiva l'effetto,
 % 2. pescare,
 % 3. dire uno.
-gioca_carta(Valore,Colore) :-
+gioca_carta(card(Valore,Colore)) :-
     carte_giocate(CarteGiocate),
     mano_giocatore1(ManoGiocatore1),
-    % writeln(PrimaCarta),
-
-    %retract(valida(_)),
-    %assertz(valida(true)),
     Carta = card(Valore,Colore),
+    writeln(Carta),
     NuoveCarteGiocate = [Carta, CarteGiocate],
     select(Carta, ManoGiocatore1, NuovaMano),
+    writeln('godo'),
     retract(mano_giocatore1(ManoGiocatore1)),
     assertz(mano_giocatore1(NuovaMano)),
     retract(carte_giocate(CarteGiocate)),
     assertz(carte_giocate(NuoveCarteGiocate)),
+    writeln('nuova mano:'),
     writeln(NuovaMano),
-    writeln(CarteGiocate),
-    %setta_mano_giocatore,
-    %crea_carta_giocata.
+    writeln('nuove carte giocate:'),
+    writeln(NuoveCarteGiocate).
+
 
 estrai_elementi([card(Valore, Colore), Peso], Valore, Colore, Peso).
 % Cerca la miglior carta da giocare nella mano dell'ia ( per mo vede
@@ -569,7 +573,7 @@ turno_giocatore :-
         assertz(turno_bloccato(no)),
         turno_ia
     ;   writeln('Il tuo turno!'),
-        gioca_carta,
+        %gioca_carta,
         controlla_vittoria,
         controllo_mazzo,
         turno_ia
