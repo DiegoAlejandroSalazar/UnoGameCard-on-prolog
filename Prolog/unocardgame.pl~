@@ -369,11 +369,7 @@ controllo_uno:-
     retractall(detto_uno(_)),
     assertz(detto_uno(no)).
 
-% Funzione che fa fare un azione al giocatore :
-% 1. giocare una carta in mano ( controlla se è giocabile o se la ha
-% nella mano e attiva l'effetto,
-% 2. pescare,
-% 3. dire uno.
+% Funzione che fa fare un azione al giocatore
 gioca_carta(card(Valore,Colore)) :-
     carte_giocate(CarteGiocate),
     mano_giocatore1(ManoGiocatore1),

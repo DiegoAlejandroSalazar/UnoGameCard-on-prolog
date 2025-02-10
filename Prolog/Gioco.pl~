@@ -46,8 +46,8 @@ start_game :-
     send(@dialog, display, @rulesbutton, point(XRulesbutton,600)),
     send(@dialog, open).
 
-rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
-    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
+%rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
+%    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
 
 
 start_the_game :-
@@ -55,16 +55,13 @@ start_the_game :-
     free(@playbutton),
     free(@rulesbutton),
 
-    %free(@imagefile2),
     free(@device),
     new(@device, device),
     send(@dialog, display, @device, point(0,0)),
 
-    % inserisco l'immagine come sfondo
     source_file(start_the_game, File),
     rimuovi_file_da_percorso(File, Risultato),
     directory_file_path(Risultato, '/Immagini/backgroundGameplay.jpg', NuovoPercorso),
-    %free(@imagefile),
     new(@imagefile2, image(NuovoPercorso)),
     new(Bitmap, bitmap(@imagefile2)),
     send(@device, display, Bitmap),
@@ -226,15 +223,15 @@ gestisci_click(Carta) :-
           ->
           writeln('carta valida'),
           gioca_carta(card(Valore,Colore)),
-          writeln('carta Giocata'),
+          %writeln('carta Giocata'),
           crea_carta_giocata,
-          writeln('PRIMA DEL FREE'),
-          writeln(ListaBox),
+          %writeln('PRIMA DEL FREE'),
+          %writeln(ListaBox),
           cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
           retract(boxes_giocatore(_)),
           assertz(boxes_giocatore(NuovaListaBox)),
-          writeln('DOPO DEL FREE'),
-          writeln(NuovaListaBox),
+          %writeln('DOPO DEL FREE'),
+          %writeln(NuovaListaBox),
           setta_mano_giocatore
     ;
     writeln('carta non valida')

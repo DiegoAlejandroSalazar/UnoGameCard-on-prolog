@@ -72,7 +72,6 @@ campo_inizio :-
     PositionYmazzo is 350-Yoffset/2,
 
     free(@cartamazzo),
-
     new(@cartamazzo, box(LarghezzaCarta,AltezzaCarta)),
 
     send(@cartamazzo, fill_pattern, colour(black)),
@@ -80,39 +79,31 @@ campo_inizio :-
     send(@cartamazzo, colour, white),
 
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
+    send(@cartamazzo, recogniser, click_gesture(left, '', single,
+                 message(@prolog, pesca_carte, 1, 1))),
 
 
-    % Bottone per pescare una carta
-    free(@pescaButton),
-    new(@pescaButton, button('Pesca', message(@prolog, pesca_carte, 1, 1))),
-    send(@pescaButton, size, size(200, 50)), % Imposta la dimensione del bottone
-    send(@pescaButton, font, font(helvetica, bold, 20)), % Modifica il font del bottone
-    %get(@pescaButton, size, size(Pbw, _)),
-    %get(@dialog, size, size(W, _)),
-    %XPescaButton is (W - Pbw) / 2,
-    PositionXButton is PositionXmazzo+50,
-    send(@dialog, display, @pescaButton, point(PositionXButton, PositionYmazzo)),
+    free(@bottoneUno),
+    new(@bottoneUno, box(150, 90)),
+    send(@bottoneUno, fill_pattern, colour(yellow)),
+    send(@bottoneUno, radius, 20),
+    send(@bottoneUno, pen, 3),
+    send(@bottoneUno, colour, red),
+    send(@dialog, display, @bottoneUno, point(480,350)),
+
+    free(@testoUno),
+    new(@testoUno, text('UNO!')),
+    send(@testoUno, font, font(helvetica, bold, 36)),
+    send(@testoUno, colour, colour(red)),
+    get(@testoUno, width, TestoWidth),
+    get(@testoUno, height, TestoHeight),
+    TestoX is 480 + (150 - TestoWidth) / 2,
+    TestoY is 350 + (90 - TestoHeight) / 2,
+    send(@dialog, display, @testoUno, point(TestoX, TestoY)),
+
+    send(@bottoneUno, recogniser, click_gesture(left, '', single,
+                 message(@prolog, bottone_uno))).
 
 
-    %%%%%%%%% cose per l'input con il clic, chiedere a laura %%%%%%%%%
-   %% forall(casella_punteggio_g1(C),
-          % (
-               %send(C, recogniser, click_gesture(left, '', single, message(@prolog, click_assegna_punteggio, C)))
-          % )
-         % ),
-   % forall(casella_punteggio_g2(C),
-          % (
-             %  send(C, recogniser, click_gesture(left, '', single, message(@prolog, click_blocca_categoria, C)))
-       %    )
-       %   ),
-
-
-    true.
-
-
-
-
-
-
-
-%predicato bottone pesca
+rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
+    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
