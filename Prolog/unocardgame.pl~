@@ -334,7 +334,6 @@ pesca_carte(N,P) :-
 bottone_pesca:-
     pesca_carte(1,1).
 
-
 % Funzione che cambia il valore della variabile dinamica.
 bottone_uno :-
     writeln('Hai detto uno'),

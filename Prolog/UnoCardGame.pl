@@ -246,7 +246,7 @@ scegli_colore_aux(_,ColoreScelto) :-
 % Funzione per cambiare il colore della carta.
 cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
     giocatore_attivo(Giocatore),
-     mano_giocatore2(ManoGiocatore2),
+    mano_giocatore2(ManoGiocatore2),
     (
         Giocatore = 1
         ->
