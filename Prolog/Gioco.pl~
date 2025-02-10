@@ -19,36 +19,12 @@ start_game :-
     % inserisco l'immagine come sfondo
     source_file(start_game, File),
     rimuovi_file_da_percorso(File, Risultato),
-    directory_file_path(Risultato, '/Immagini/background.jpeg', NuovoPercorso),
-    %directory_file_path(Risultato, '/Immagini/backgroundGamePlay.jpg', NuovoPercorso),
+    directory_file_path(Risultato, '/Immagini/Sfondo.jpg', NuovoPercorso),
     %free(@imagefile),
     new(@imagefile, image(NuovoPercorso)),
     new(Bitmap, bitmap(@imagefile)),
     send(@device, display, Bitmap),
     send(Bitmap, center, @device?center),
-
-    %inserisco l'immagine come sfondo
-    %source_file(start_app, File),
-    %rimuovi_file_da_percorso(File, Risultato),
-    %directory_file_path(Risultato, '/Immagini/background.jpg', NuovoPercorso),
-    %new(Background, image('C:/Users/diego/Desktop/Prolog/UnoGameCard-on-prolog/Prolog/immagini/background.jpeg')),
-    %new(BitmapBackground, bitmap(Background)),
-    %send(@dialog, display, BitmapBackground),
-    %send(BitmapBackground, center, @dialog?center),
-
-
-    % immagine titolo
-    %get(@dialog,size, size(W, _)),
-    %new(Imagefile, image('C:/Users/diego/Desktop/Prolog/UnoGameCard-on-prolog/Prolog/immagini/Title_Image.jpg')),
-    %new(BitmapTitle, bitmap(Imagefile)),
-    %send(@dialog, display, BitmapTitle),
-    %send(BitmapTitle, center, @dialog?center),
-    %get(BitmapTitle,size,size(Iw,_)),
-    %Ximage is (W-Iw)/2, % per centrare
-    %send(@dialog, display, BitmapTitle, point(Ximage,10)),
-    % new(Label, text('UNO E MEZZO')),
-    %send(Label, font, font(helvetica, bold, 20)),
-
 
     %bottone play
     free(@playbutton),
@@ -59,7 +35,6 @@ start_game :-
     get(@dialog, size, size(W,_)),
     XPlaybutton is (W-Pbw)/2,
     send(@dialog, display, @playbutton, point(XPlaybutton,500)),
-
 
     %bottone regole
     free(@rulesbutton),
@@ -74,10 +49,26 @@ start_game :-
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
     file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
 
+
 start_the_game :-
-    send(@dialog, background, white),
+    send(@device, clear),
     free(@playbutton),
     free(@rulesbutton),
+
+    %free(@imagefile2),
+    free(@device),
+    new(@device, device),
+    send(@dialog, display, @device, point(0,0)),
+
+    % inserisco l'immagine come sfondo
+    source_file(start_the_game, File),
+    rimuovi_file_da_percorso(File, Risultato),
+    directory_file_path(Risultato, '/Immagini/backgroundGameplay.jpg', NuovoPercorso),
+    %free(@imagefile),
+    new(@imagefile2, image(NuovoPercorso)),
+    new(Bitmap, bitmap(@imagefile2)),
+    send(@device, display, Bitmap),
+    send(Bitmap, center, @device?center),
 
     campo_inizio,
     inizializza_gioco,
@@ -88,8 +79,8 @@ start_the_game :-
 setta_mano_giocatore:-
     rimuovi_tutte_carte,
     mano_giocatore1(ManoGiocatore1),
-    writeln('palle'),
-    writeln(ManoGiocatore1),
+    %writeln('palle'),
+    %writeln(ManoGiocatore1),
     length(ManoGiocatore1, IndiceMax),
     findall(Valori,
              member(card(Valori, _), ManoGiocatore1),
@@ -135,7 +126,6 @@ setta_mano_IA :-
     ).
 
 
-
 distruggi_carte_IA :-
     lista_X(ListaX),
     lista_Y_IA(ListaY),
@@ -149,9 +139,9 @@ distruggi_carte_IA :-
 
 carta_generica(Colore,X,Y) :-
     new(Carta, box(68,100)),
-    send(Carta, pen, 0),
     send(Carta, radius, 7),
     send(Carta, fill_pattern, colour(Colore)),
+    send(Carta, colour, white),
 
     send(@dialog, display, Carta, point(X,Y)),
     flush_output.
@@ -173,7 +163,7 @@ crea_carte(Valore, Colore, X, Y) :-
     send(Carta, fill_pattern, colour(Colore))
     ),
 
-    send(Carta, pen, 0),
+    send(Carta, colour, white),
     send(Carta, radius, 7),
     send(@dialog, display, Carta, point(X,Y)),
 
@@ -212,7 +202,7 @@ crea_carta_giocata :-
     send(Carta, fill_pattern, colour(ColoreEffettivo))
     ),
 
-    send(Carta, pen, 0),
+    send(Carta, colour, white),
     send(Carta, radius, 7),
     send(@dialog, display, Carta, point(X,Y)),
 
@@ -232,7 +222,7 @@ gestisci_click(Carta) :-
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
     (
-        carta_valida(card(Valore,Colore),PrimaCarta)
+          carta_valida(card(Valore,Colore),PrimaCarta)
           ->
           writeln('carta valida'),
           gioca_carta(card(Valore,Colore)),

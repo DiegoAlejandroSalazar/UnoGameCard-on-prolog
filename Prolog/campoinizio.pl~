@@ -64,8 +64,6 @@ lista_Y_IA([ 20,
 
 
 campo_inizio :-
-    send(@dialog, background, colour(white)),
-
     LarghezzaCarta is 68,
     AltezzaCarta is 100,
     Yoffset is 105,
@@ -92,7 +90,7 @@ campo_inizio :-
     %get(@pescaButton, size, size(Pbw, _)),
     %get(@dialog, size, size(W, _)),
     %XPescaButton is (W - Pbw) / 2,
-    PositionXButton is PositionXmazzo-50,
+    PositionXButton is PositionXmazzo+50,
     send(@dialog, display, @pescaButton, point(PositionXButton, PositionYmazzo)),
 
 

@@ -64,8 +64,6 @@ lista_Y_IA([ 20,
 
 
 campo_inizio :-
-    send(@dialog, background, colour(white)),
-
     LarghezzaCarta is 68,
     AltezzaCarta is 100,
     Yoffset is 105,
@@ -78,8 +76,8 @@ campo_inizio :-
     new(@cartamazzo, box(LarghezzaCarta,AltezzaCarta)),
 
     send(@cartamazzo, fill_pattern, colour(black)),
-    send(@cartamazzo, pen, 0),
     send(@cartamazzo, radius, 7),
+    send(@cartamazzo, colour, white),
 
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
 
