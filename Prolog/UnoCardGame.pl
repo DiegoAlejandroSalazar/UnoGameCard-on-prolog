@@ -126,6 +126,7 @@ card(stop, yellow2).
 :-dynamic colore/1.
 
 
+
 % Inizializzazione del gioco
 % 1. svuotamento variabili dinamiche,
 % 2. creazione e randomizzazione del mazzo,
@@ -145,7 +146,7 @@ inizializza_gioco :-
     retractall(gioco_finito(_)),
     retractall(boxes_giocatore(_)),
     retractall(boxes_giocatore2(_)),
-    retractall(boxes_colori(_)),
+    %retractall(boxes_colori(_)),
     retractall(colore(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
@@ -164,7 +165,7 @@ inizializza_gioco :-
     assertz(boxes_giocatore([])),
     assertz(boxes_giocatore2([])),
     assertz(boxes_colori([])),
-    %assertz(colore()),
+    assertz(colore(noColor)),
     setta_mano_giocatore,
     setta_mano_IA,
     crea_carta_giocata.
@@ -254,7 +255,10 @@ cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
     (
         Giocatore = 1
         ->
-         scegli_colore(card(_, ColoreScelto),NuovoColore)
+        writeln('si cambia colore'),
+        wait_for_color_selection(NuovoColore),
+        writeln(NuovoColore)
+        % scegli_colore(card(_, ColoreScelto),NuovoColore)
         ;
         colore_massimo(ManoGiocatore2,NuovoColore)
     ),
@@ -299,7 +303,6 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         )
     ;   ValoreGiocato == cambio ->
         (   GiocatoreAttivo = 1 ->
-            get_char(_),
             cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
             writeln('Cambio Colore!'),
             writeln('')
