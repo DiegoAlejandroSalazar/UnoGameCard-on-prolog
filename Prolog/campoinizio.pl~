@@ -122,7 +122,7 @@ campo_inizio :-
     send(@bottoneRosso, colour, white),
     send(@dialog, display, @bottoneRosso, point(70,350)),
     send(@bottoneRosso, recogniser, click_gesture(left, '', single,
-                 message(@prolog, bottone_uno))),
+                 message(@prolog, cambio_colore, @bottoneRosso))),
 
     %bottone blu
     free(@bottoneBlu),
@@ -131,6 +131,8 @@ campo_inizio :-
     send(@bottoneBlu, radius, 10),
     send(@bottoneBlu, colour, white),
     send(@dialog, display, @bottoneBlu, point(150,350)),
+    send(@bottoneBlu, recogniser, click_gesture(left, '', single,
+                 message(@prolog, cambio_colore, @bottoneBlu))),
 
     %bottone giallo
     free(@bottoneGiallo),
@@ -139,6 +141,8 @@ campo_inizio :-
     send(@bottoneGiallo, radius, 10),
     send(@bottoneGiallo, colour, white),
     send(@dialog, display, @bottoneGiallo, point(70,400)),
+    send(@bottoneGiallo, recogniser, click_gesture(left, '', single,
+                 message(@prolog, cambio_colore, @bottoneGiallo))),
 
     %bottone verde
     free(@bottoneVerde),
@@ -146,7 +150,35 @@ campo_inizio :-
     send(@bottoneVerde, fill_pattern, colour(green)),
     send(@bottoneVerde, radius, 10),
     send(@bottoneVerde, colour, white),
-    send(@dialog, display, @bottoneVerde, point(150,400)).
+    send(@dialog, display, @bottoneVerde, point(150,400)),
+    send(@bottoneVerde, recogniser, click_gesture(left, '', single,
+                 message(@prolog, cambio_colore, @bottoneVerde))),
+
+
+    Lista = [[@bottoneRosso, 'red'],[@bottoneBlu, 'blue'], [@bottoneVerde, 'green'], [@bottoneGiallo, 'orange']],
+    retractall(boxes_colori(_)),
+    assertz(boxes_colori(Lista)),
+    writeln(Lista).
+
+
+cambio_colore(Bottone) :-
+    writeln('HAI CLICCATO:'),
+    boxes_colori(Lista),
+    cerca_colore(Bottone,Lista,Colore),
+    retractall(colore(_)),
+    assertz(colore(Colore)),
+    writeln(Colore).
+
+% Cerca la carta cliccata all'interno della lista
+cerca_colore(BottoneCliccato, [[BottoneCliccato,Colore]|_],Colore) :-
+    writeln('Colore trovato: '),
+    writeln(Colore),
+    %format('Carta: ~w, Testo: ~w, Valore: ~w, Colore: ~w~n', [CartaCliccata, Testo, Valore, Colore]),
+    !.
+
+cerca_colore(BottoneCliccato, [_|Rest], Colore) :-
+    cerca_colore(BottoneCliccato, Rest, Colore).
+
 
 
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-

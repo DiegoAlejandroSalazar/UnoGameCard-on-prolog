@@ -122,6 +122,9 @@ card(stop, yellow2).
 :-dynamic gioco_finito/1.
 :-dynamic boxes_giocatore/1.
 :-dynamic boxes_giocatore2/1.
+:-dynamic boxes_colori/1.
+:-dynamic colore/1.
+
 
 % Inizializzazione del gioco
 % 1. svuotamento variabili dinamiche,
@@ -142,6 +145,8 @@ inizializza_gioco :-
     retractall(gioco_finito(_)),
     retractall(boxes_giocatore(_)),
     retractall(boxes_giocatore2(_)),
+    retractall(boxes_colori(_)),
+    retractall(colore(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
     assertz(mazzo(Mazzo)),
@@ -158,6 +163,8 @@ inizializza_gioco :-
     assertz(gioco_finito(no)),
     assertz(boxes_giocatore([])),
     assertz(boxes_giocatore2([])),
+    assertz(boxes_colori([])),
+    %assertz(colore()),
     setta_mano_giocatore,
     setta_mano_IA,
     crea_carta_giocata.
@@ -230,7 +237,7 @@ scegli_colore(card(_, ColoreScelto),NuovoColore) :-
 % Richiesta effettiva del colore.
 scegli_colore_aux(_,ColoreScelto) :-
     writeln('Scegli un colore (red, green, blue, yellow):'),
-    read(ColoreInserito),
+    %read(ColoreInserito),
     (color(ColoreInserito)
     ->
     writeln('Colore valido'),
@@ -261,7 +268,7 @@ cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
     assertz(carte_giocate(NuoveCarteGiocate)),
     writeln('Colore cambiato con successo!').
 
-% Funzione che attiva l'effetto della carta giocata.
+    % Funzione che attiva l'effetto della carta giocata.
 attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     giocatore_attivo(GiocatoreAttivo),
     (   ValoreGiocato == +2 ->
@@ -292,6 +299,7 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         )
     ;   ValoreGiocato == cambio ->
         (   GiocatoreAttivo = 1 ->
+            get_char(_),
             cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
             writeln('Cambio Colore!'),
             writeln('')
