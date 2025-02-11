@@ -159,6 +159,10 @@ crea_carte(Valore, Colore, X, Y) :-
 
     term_string(Valore, String),
     new(Testo, text(String)),
+    (   String == "cambio"
+    ->  send(Testo, string, 'C')
+    ;
+    true),
     send(Testo, font, font(helvetica, bold, 20)),
     send(Testo, colour, colour(white)),
     get(Testo, width, TestoWidth),
@@ -193,15 +197,19 @@ crea_carta_giocata :-
     send(Carta, radius, 7),
     send(@dialog, display, Carta, point(X,Y)),
 
-    term_string(Valore, String),
-    new(Testo, text(String)),
-    send(Testo, font, font(helvetica, bold, 20)),
-    send(Testo, colour, colour(white)),
-    get(Testo, width, TestoWidth),
-    get(Testo, height, TestoHeight),
+    term_string(Valore, StringGiocata),
+    new(TestoGiocato, text(StringGiocata)),
+    (   StringGiocata == "cambio"
+    ->  send(TestoGiocato, string, 'C')
+    ;
+    true),
+    send(TestoGiocato, font, font(helvetica, bold, 20)),
+    send(TestoGiocato, colour, colour(white)),
+    get(TestoGiocato, width, TestoWidth),
+    get(TestoGiocato, height, TestoHeight),
     TestoX is X + (68 - TestoWidth) / 2,
     TestoY is Y + (100 - TestoHeight) / 2,
-    send(@dialog, display, Testo, point(TestoX, TestoY)).
+    send(@dialog, display, TestoGiocato, point(TestoX, TestoY)).
 
 
 gestisci_click(Carta) :-

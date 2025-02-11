@@ -119,16 +119,6 @@ setta_mano_IA :-
     ).
 
 
-distruggi_carte_IA :-
-    lista_X(ListaX),
-    lista_Y_IA(ListaY),
-
-    forall(
-        (
-        nth0(Indice, ListaX, PosizioneX),
-        nth0(Indice, ListaY, PosizioneY)),
-        (carta_generica(white, PosizioneX, PosizioneY)
-        )).
 
 carta_generica(Colore,X,Y) :-
     new(Carta, box(68,100)),
@@ -169,6 +159,10 @@ crea_carte(Valore, Colore, X, Y) :-
 
     term_string(Valore, String),
     new(Testo, text(String)),
+    (   String == "cambio"
+    ->  send(Testo, string, 'C')
+    ;
+    true),
     send(Testo, font, font(helvetica, bold, 20)),
     send(Testo, colour, colour(white)),
     get(Testo, width, TestoWidth),
@@ -203,8 +197,8 @@ crea_carta_giocata :-
     send(Carta, radius, 7),
     send(@dialog, display, Carta, point(X,Y)),
 
-    term_string(Valore, String),
-    new(Testo, text(String)),
+    term_string(Valore, StringGiocata),
+    new(Testo, text(StringGiocata)),
     send(Testo, font, font(helvetica, bold, 20)),
     send(Testo, colour, colour(white)),
     get(Testo, width, TestoWidth),
