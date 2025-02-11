@@ -46,10 +46,6 @@ start_game :-
     send(@dialog, display, @rulesbutton, point(XRulesbutton,600)),
     send(@dialog, open).
 
-%rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
-%    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
-
-
 start_the_game :-
     send(@device, clear),
     free(@playbutton),
@@ -76,7 +72,6 @@ start_the_game :-
 setta_mano_giocatore:-
     rimuovi_tutte_carte,
     mano_giocatore1(ManoGiocatore1),
-    %writeln('palle'),
     %writeln(ManoGiocatore1),
     length(ManoGiocatore1, IndiceMax),
     findall(Valori,
@@ -124,16 +119,6 @@ setta_mano_IA :-
     ).
 
 
-distruggi_carte_IA :-
-    lista_X(ListaX),
-    lista_Y_IA(ListaY),
-
-    forall(
-        (
-        nth0(Indice, ListaX, PosizioneX),
-        nth0(Indice, ListaY, PosizioneY)),
-        (carta_generica(white, PosizioneX, PosizioneY)
-        )).
 
 carta_generica(Colore,X,Y) :-
     new(Carta, box(68,100)),
@@ -147,9 +132,6 @@ carta_generica(Colore,X,Y) :-
     append([Carta],ListaBox2,NuovaListaBox2),
     retract(boxes_giocatore2(_)),
     assertz(boxes_giocatore2(NuovaListaBox2)).
-    %writeln(''),
-    %writeln(NuovaListaBox2).
-
 
 
 crea_carte(Valore, Colore, X, Y) :-
@@ -223,21 +205,30 @@ crea_carta_giocata :-
 
 
 gestisci_click(Carta) :-
+    giocatore_attivo(GiocatoreAttivo),
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
-    (
-          carta_valida(card(Valore,Colore),PrimaCarta)
-          ->
-          gioca_carta(card(Valore,Colore)),
-          crea_carta_giocata,
-          cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
-          retract(boxes_giocatore(_)),
-          assertz(boxes_giocatore(NuovaListaBox)),
-          setta_mano_giocatore,
-          setta_mano_IA
-    ;
-    writeln('carta non valida')
+    (   GiocatoreAttivo = 1
+        ->
+                         (
+                              carta_valida(card(Valore,Colore),PrimaCarta)
+                              ->
+                              gioca_carta(card(Valore,Colore)),
+                              crea_carta_giocata,
+                              cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
+                              retract(boxes_giocatore(_)),
+                              assertz(boxes_giocatore(NuovaListaBox)),
+                              setta_mano_giocatore,
+                              setta_mano_IA,
+                              retractall(giocatore_attivo(_)),
+                              assertz(giocatore_attivo(2)),
+                              gioca_carta_ia
+                              ;
+                              writeln('carta non valida')
+                          )
+        ;
+        writeln('Non è il tuo turno!')
     ).
 
 % Cerca la carta cliccata all'interno della lista

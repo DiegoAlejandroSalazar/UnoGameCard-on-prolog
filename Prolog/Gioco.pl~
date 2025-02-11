@@ -46,10 +46,6 @@ start_game :-
     send(@dialog, display, @rulesbutton, point(XRulesbutton,600)),
     send(@dialog, open).
 
-%rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
-%    file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
-
-
 start_the_game :-
     send(@device, clear),
     free(@playbutton),
@@ -76,7 +72,6 @@ start_the_game :-
 setta_mano_giocatore:-
     rimuovi_tutte_carte,
     mano_giocatore1(ManoGiocatore1),
-    %writeln('palle'),
     %writeln(ManoGiocatore1),
     length(ManoGiocatore1, IndiceMax),
     findall(Valori,
@@ -147,9 +142,6 @@ carta_generica(Colore,X,Y) :-
     append([Carta],ListaBox2,NuovaListaBox2),
     retract(boxes_giocatore2(_)),
     assertz(boxes_giocatore2(NuovaListaBox2)).
-    %writeln(''),
-    %writeln(NuovaListaBox2).
-
 
 
 crea_carte(Valore, Colore, X, Y) :-
@@ -223,21 +215,30 @@ crea_carta_giocata :-
 
 
 gestisci_click(Carta) :-
+    giocatore_attivo(GiocatoreAttivo),
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
-    (
-          carta_valida(card(Valore,Colore),PrimaCarta)
-          ->
-          gioca_carta(card(Valore,Colore)),
-          crea_carta_giocata,
-          cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
-          retract(boxes_giocatore(_)),
-          assertz(boxes_giocatore(NuovaListaBox)),
-          setta_mano_giocatore,
-          setta_mano_IA
-    ;
-    writeln('carta non valida')
+    (   GiocatoreAttivo = 1
+        ->
+                         (
+                              carta_valida(card(Valore,Colore),PrimaCarta)
+                              ->
+                              gioca_carta(card(Valore,Colore)),
+                              crea_carta_giocata,
+                              cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
+                              retract(boxes_giocatore(_)),
+                              assertz(boxes_giocatore(NuovaListaBox)),
+                              setta_mano_giocatore,
+                              setta_mano_IA,
+                              retractall(giocatore_attivo(_)),
+                              assertz(giocatore_attivo(2)),
+                              gioca_carta_ia
+                              ;
+                              writeln('carta non valida')
+                          )
+        ;
+        writeln('Non è il tuo turno!')
     ).
 
 % Cerca la carta cliccata all'interno della lista
@@ -262,13 +263,15 @@ cerca_e_rimuovi_carta(CartaCliccata, [Altro|Rest], [Altro|NuovoRest]) :-
     % Predicato per rimuovere tutte le carte
 rimuovi_tutte_carte :-
     boxes_giocatore(ListaBox),
-    writeln('Rimuovendo tutte le carte...'),
+    %writeln('Rimuovendo tutte le carte...'),
     retract(boxes_giocatore(_)), % Rimuove la lista corrente
     assertz(boxes_giocatore([])), % Imposta una nuova lista vuota
     rimuovi_tutte_carte_lista(ListaBox).
 
 rimuovi_tutte_carte_lista([]) :-
-    writeln('Tutte le carte sono state rimosse.').
+    %writeln('Tutte le carte sono state rimosse.').
+    writeln('').
+
 
 rimuovi_tutte_carte_lista([[Carta, Testo, _, _] | Rest]) :-
     free(Carta), % Libera (rimuove) la carta dalla finestra grafica
@@ -277,7 +280,7 @@ rimuovi_tutte_carte_lista([[Carta, Testo, _, _] | Rest]) :-
 
 rimuovi_tutte_carte_ia :-
     boxes_giocatore2(ListaBox2),
-    writeln('Rimuovendo tutte le carte...'),
+    %writeln('Rimuovendo tutte le carte...'),
     retract(boxes_giocatore2(_)), % Rimuove la lista corrente
     assertz(boxes_giocatore2([])), % Imposta una nuova lista vuota
     rimuovi_tutte_carte_lista_Ia(ListaBox2).
@@ -286,7 +289,9 @@ rimuovi_tutte_carte_ia :-
 % Predicato per rimuovere tutte le carte dalla lista
 
 rimuovi_tutte_carte_lista_Ia([]) :-
-    writeln('Tutte le carte ia sono state rimosse.').
+    %writeln('Tutte le carte ia sono state rimosse.').
+    writeln('').
+
 
 rimuovi_tutte_carte_lista_Ia([Carta| Rest]) :- % per le carte generiche
     free(Carta), % Libera (rimuove) la carta dalla finestra grafica

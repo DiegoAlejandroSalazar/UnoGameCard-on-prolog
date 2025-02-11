@@ -97,7 +97,6 @@ campo_inizio :-
     send(@bottoneUno, pen, 3),
     send(@bottoneUno, colour, red),
     send(@dialog, display, @bottoneUno, point(480,350)),
-
     send(@bottoneUno, recogniser, click_gesture(left, '', single,
                  message(@prolog, bottone_uno))),
 
@@ -122,6 +121,8 @@ campo_inizio :-
     send(@bottoneRosso, radius, 10),
     send(@bottoneRosso, colour, white),
     send(@dialog, display, @bottoneRosso, point(70,350)),
+    %send(@bottoneRosso, recogniser, click_gesture(left, '', single,
+     %            message(@prolog, bottone_uno))),
 
     %bottone blu
     free(@bottoneBlu),
@@ -145,8 +146,7 @@ campo_inizio :-
     send(@bottoneVerde, fill_pattern, colour(green)),
     send(@bottoneVerde, radius, 10),
     send(@bottoneVerde, colour, white),
-    send(@dialog, display, @bottoneVerde, point(150,400)),
-    true.
+    send(@dialog, display, @bottoneVerde, point(150,400)).
 
 
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-

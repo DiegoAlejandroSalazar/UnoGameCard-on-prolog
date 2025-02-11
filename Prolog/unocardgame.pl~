@@ -122,7 +122,6 @@ card(stop, yellow2).
 :-dynamic gioco_finito/1.
 :-dynamic boxes_giocatore/1.
 :-dynamic boxes_giocatore2/1.
-:-dynamic valida/1.
 
 % Inizializzazione del gioco
 % 1. svuotamento variabili dinamiche,
@@ -143,7 +142,6 @@ inizializza_gioco :-
     retractall(gioco_finito(_)),
     retractall(boxes_giocatore(_)),
     retractall(boxes_giocatore2(_)),
-    retractall(valida(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
     assertz(mazzo(Mazzo)),
@@ -158,7 +156,6 @@ inizializza_gioco :-
     assertz(turno_bloccato(no)),
     assertz(detto_uno(no)),
     assertz(gioco_finito(no)),
-    assertz(valida(true)),
     assertz(boxes_giocatore([])),
     assertz(boxes_giocatore2([])),
     setta_mano_giocatore,
@@ -379,10 +376,11 @@ gioca_carta(card(Valore,Colore)) :-
     assertz(mano_giocatore1(NuovaMano)),
     retract(carte_giocate(CarteGiocate)),
     assertz(carte_giocate(NuoveCarteGiocate)),
-    writeln('nuova mano:'),
-    writeln(NuovaMano),
-    writeln('nuove carte giocate:'),
-    writeln(NuoveCarteGiocate),
+    crea_carta_giocata,
+    %writeln('nuova mano:'),
+    %writeln(NuovaMano),
+    %writeln('nuove carte giocate:'),
+    %writeln(NuoveCarteGiocate),
     attiva_effetto(Carta).
 
 
@@ -529,7 +527,9 @@ gioca_carta_ia :-
         assertz(mano_giocatore2(NuovaMano2)),
         retract(carte_giocate(Carte_Giocate)),
         assertz(carte_giocate(NuoveCarteGiocate)),
+        sleep(1),
         attiva_effetto(CartaGiocata),
+        crea_carta_giocata,
         writeln('IA ha giocato: '),
         writeln(''),
         writeln(CartaGiocata),
@@ -541,16 +541,21 @@ gioca_carta_ia :-
         retractall(carte_giocabili_ia(_)),
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
-        assertz(carta_da_giocare_ia(_)).
+        assertz(carta_da_giocare_ia(_)),
+        retractall(giocatore_attivo(_)),
+        assertz(giocatore_attivo(1)).
+
 gioca_carta_ia :-
     writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
     pesca_carte(1, 2),
     %mano_giocatore2(ManoGiocatore2),
-    writeln('').
+    writeln(''),
    % writeln('Mano IA: '),
    % writeln('--------------------------------------------------------------------------'),
     %writeln(ManoGiocatore2),
-   % writeln('--------------------------------------------------------------------------').
+   % writeln('--------------------------------------------------------------------------'),
+    retractall(giocatore_attivo(_)),
+    assertz(giocatore_attivo(1)).
 
 
 % Mette la variabile giocatore_attivo a 1 e controlla se il gioco è
