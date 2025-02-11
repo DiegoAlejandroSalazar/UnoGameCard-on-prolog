@@ -146,7 +146,6 @@ campo_inizio :-
     send(@bottoneVerde, radius, 10),
     send(@bottoneVerde, colour, white),
     send(@dialog, display, @bottoneVerde, point(150,400)),
-
     true.
 
 

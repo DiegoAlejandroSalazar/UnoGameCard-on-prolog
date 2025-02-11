@@ -61,8 +61,6 @@ lista_Y_IA([ 20,
 
 
 campo_inizio :-
-    LarghezzaCarta is 68,
-    AltezzaCarta is 100,
     Yoffset is 105,
 
     PositionXmazzo is 355,
@@ -70,7 +68,7 @@ campo_inizio :-
 
     % Carta Mazzo
     free(@cartamazzo),
-    new(@cartamazzo, box(LarghezzaCarta,AltezzaCarta)),
+    new(@cartamazzo, box(68,100)),
     send(@cartamazzo, fill_pattern, colour(black)),
     send(@cartamazzo, radius, 7),
     send(@cartamazzo, colour, white),
@@ -148,7 +146,6 @@ campo_inizio :-
     send(@bottoneVerde, radius, 10),
     send(@bottoneVerde, colour, white),
     send(@dialog, display, @bottoneVerde, point(150,400)),
-
     true.
 
 

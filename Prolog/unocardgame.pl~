@@ -120,8 +120,8 @@ card(stop, yellow2).
 :-dynamic turno_bloccato/1.
 :-dynamic detto_uno/1.
 :-dynamic gioco_finito/1.
-:-dynamic box_giocatore/4.
 :-dynamic boxes_giocatore/1.
+:-dynamic boxes_giocatore2/1.
 :-dynamic valida/1.
 
 % Inizializzazione del gioco
@@ -141,8 +141,8 @@ inizializza_gioco :-
     retractall(turno_bloccato(_)),
     retractall(detto_uno(_)),
     retractall(gioco_finito(_)),
-    retractall(box_giocatore(_,_,_,_)),
     retractall(boxes_giocatore(_)),
+    retractall(boxes_giocatore2(_)),
     retractall(valida(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
@@ -160,7 +160,7 @@ inizializza_gioco :-
     assertz(gioco_finito(no)),
     assertz(valida(true)),
     assertz(boxes_giocatore([])),
-    assert(box_giocatore(_,_,_,_)),
+    assertz(boxes_giocatore2([])),
     setta_mano_giocatore,
     setta_mano_IA,
     crea_carta_giocata.
@@ -246,7 +246,7 @@ scegli_colore_aux(_,ColoreScelto) :-
 % Funzione per cambiare il colore della carta.
 cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
     giocatore_attivo(Giocatore),
-     mano_giocatore2(ManoGiocatore2),
+    mano_giocatore2(ManoGiocatore2),
     (
         Giocatore = 1
         ->
@@ -373,10 +373,8 @@ gioca_carta(card(Valore,Colore)) :-
     carte_giocate(CarteGiocate),
     mano_giocatore1(ManoGiocatore1),
     Carta = card(Valore,Colore),
-    writeln(Carta),
     NuoveCarteGiocate = [Carta, CarteGiocate],
     select(Carta, ManoGiocatore1, NuovaMano),
-    writeln('godo'),
     retract(mano_giocatore1(ManoGiocatore1)),
     assertz(mano_giocatore1(NuovaMano)),
     retract(carte_giocate(CarteGiocate)),
@@ -384,7 +382,8 @@ gioca_carta(card(Valore,Colore)) :-
     writeln('nuova mano:'),
     writeln(NuovaMano),
     writeln('nuove carte giocate:'),
-    writeln(NuoveCarteGiocate).
+    writeln(NuoveCarteGiocate),
+    attiva_effetto(Carta).
 
 
 estrai_elementi([card(Valore, Colore), Peso], Valore, Colore, Peso).
