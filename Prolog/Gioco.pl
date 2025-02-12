@@ -228,10 +228,10 @@ gestisci_click(Carta) :-
                               retract(boxes_giocatore(_)),
                               assertz(boxes_giocatore(NuovaListaBox)),
                               setta_mano_giocatore,
-                              setta_mano_IA,
                               retractall(giocatore_attivo(_)),
                               assertz(giocatore_attivo(2)),
-                              gioca_carta_ia
+                              gioca_carta_ia,
+                              setta_mano_IA
                               ;
                               writeln('carta non valida')
                           )

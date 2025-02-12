@@ -165,7 +165,7 @@ inizializza_gioco :-
     assertz(boxes_giocatore([])),
     assertz(boxes_giocatore2([])),
     assertz(boxes_colori([])),
-    assertz(colore(noColor)),
+    assertz(colore(red)),
     setta_mano_giocatore,
     setta_mano_IA,
     crea_carta_giocata.
@@ -249,16 +249,14 @@ scegli_colore_aux(_,ColoreScelto) :-
     ).
 
 % Funzione per cambiare il colore della carta.
-cambia_colore(card(ValoreGiocato, ColoreScelto),CartaNuova) :-
+cambia_colore(card(ValoreGiocato, ColoreScelto)) :-
     giocatore_attivo(Giocatore),
     mano_giocatore2(ManoGiocatore2),
+    colore(NuovoColore),
     (
         Giocatore = 1
         ->
-        writeln('si cambia colore'),
-        wait_for_color_selection(NuovoColore),
-        writeln(NuovoColore)
-        % scegli_colore(card(_, ColoreScelto),NuovoColore)
+        colore(NuovoColore)
         ;
         colore_massimo(ManoGiocatore2,NuovoColore)
     ),
@@ -287,15 +285,14 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         )
     ;   ValoreGiocato == +4 ->
         (   GiocatoreAttivo = 1 ->
-            cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
+            cambia_colore(card(ValoreGiocato, ColoreGiocato)),
             pesca_carte(4, 2),
-            writeln('IA pesca 4 carte '),
-            writeln('')
+            sleep(1),
+            writeln('IA pesca 4 carte ')
         ;
-            cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
+            cambia_colore(card(ValoreGiocato, ColoreGiocato)),
             pesca_carte(4, 1),
-            writeln('+4 carte pescate'),
-            writeln('')
+            writeln('+4 carte pescate')
         )
     ;   ValoreGiocato == stop ->
         (   retractall(turno_bloccato(_)),
@@ -303,11 +300,11 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         )
     ;   ValoreGiocato == cambio ->
         (   GiocatoreAttivo = 1 ->
-            cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
+            cambia_colore(card(ValoreGiocato, ColoreGiocato)),
             writeln('Cambio Colore!'),
             writeln('')
         ;
-            cambia_colore(card(ValoreGiocato, ColoreGiocato),_),
+            cambia_colore(card(ValoreGiocato, ColoreGiocato)),
             writeln('IA fa cambio colore'),
             writeln('')
         )
@@ -387,10 +384,6 @@ gioca_carta(card(Valore,Colore)) :-
     retract(carte_giocate(CarteGiocate)),
     assertz(carte_giocate(NuoveCarteGiocate)),
     crea_carta_giocata,
-    %writeln('nuova mano:'),
-    %writeln(NuovaMano),
-    %writeln('nuove carte giocate:'),
-    %writeln(NuoveCarteGiocate),
     attiva_effetto(Carta).
 
 

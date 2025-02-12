@@ -112,47 +112,47 @@ campo_inizio :-
     send(@dialog, display, @testoUno, point(TestoX, TestoY)),
 
 
-
-
-    %bottone rosso
-    %free(@bottoneRosso),
-    %new(@bottoneRosso, box(70,40)),
-    %send(@bottoneRosso, fill_pattern, colour(red)),
-    %send(@bottoneRosso, radius, 10),
-    %send(@bottoneRosso, colour, white),
-    %send(@dialog, display, @bottoneRosso, point(70,350)),
-    %send(@bottoneRosso, recogniser, click_gesture(left, '', single,
-     %            message(@prolog, cambio_colore, @bottoneRosso))),
+    free(@bottoneRosso),
+    new(@bottoneRosso, box(70,40)),
+    send(@bottoneRosso, fill_pattern, colour(red)),
+    send(@bottoneRosso, radius, 10),
+    send(@bottoneRosso, colour, white),
+    send(@dialog, display, @bottoneRosso, point(70,350)),
+    send(@bottoneRosso, recogniser, click_gesture(left, '', single,
+                 message(@prolog,  colore_selezionato,@bottoneRosso, red))),
 
     %bottone blu
-    %free(@bottoneBlu),
-    %new(@bottoneBlu, box(70,40)),
-    %send(@bottoneBlu, fill_pattern, colour(blue)),
-    %send(@bottoneBlu, radius, 10),
-    %send(@bottoneBlu, colour, white),
-    %send(@dialog, display, @bottoneBlu, point(150,350)),
-    %send(@bottoneBlu, recogniser, click_gesture(left, '', single,
-     %            message(@prolog, cambio_colore, @bottoneBlu))),
+    free(@bottoneBlu),
+    new(@bottoneBlu, box(70,40)),
+    send(@bottoneBlu, fill_pattern, colour(blue)),
+    send(@bottoneBlu, radius, 10),
+    send(@bottoneBlu, colour, white),
+    send(@bottoneBlu, pen, 0),
+    send(@dialog, display, @bottoneBlu, point(150,350)),
+    send(@bottoneBlu, recogniser, click_gesture(left, '', single,
+                 message(@prolog,  colore_selezionato,@bottoneBlu, blue))),
 
     %bottone giallo
-    %free(@bottoneGiallo),
-    %new(@bottoneGiallo, box(70,40)),
-    %send(@bottoneGiallo, fill_pattern, colour(orange)),
-    %send(@bottoneGiallo, radius, 10),
-    %send(@bottoneGiallo, colour, white),
-    %send(@dialog, display, @bottoneGiallo, point(70,400)),
-    %send(@bottoneGiallo, recogniser, click_gesture(left, '', single,
-     %            message(@prolog, cambio_colore, @bottoneGiallo))),
+    free(@bottoneGiallo),
+    new(@bottoneGiallo, box(70,40)),
+    send(@bottoneGiallo, fill_pattern, colour(orange)),
+    send(@bottoneGiallo, radius, 10),
+    send(@bottoneGiallo, colour, white),
+    send(@bottoneGiallo, pen, 0),
+    send(@dialog, display, @bottoneGiallo, point(70,400)),
+    send(@bottoneGiallo, recogniser, click_gesture(left, '', single,
+                 message(@prolog,  colore_selezionato,@bottoneGiallo, orange))),
 
     %bottone verde
-    %free(@bottoneVerde),
-    %new(@bottoneVerde, box(70,40)),
-    %send(@bottoneVerde, fill_pattern, colour(green)),
-    %send(@bottoneVerde, radius, 10),
-    %send(@bottoneVerde, colour, white),
-    %send(@dialog, display, @bottoneVerde, point(150,400)),
-    %send(@bottoneVerde, recogniser, click_gesture(left, '', single,
-                 %message(@prolog, cambio_colore, @bottoneVerde))),
+    free(@bottoneVerde),
+    new(@bottoneVerde, box(70,40)),
+    send(@bottoneVerde, fill_pattern, colour(green)),
+    send(@bottoneVerde, radius, 10),
+    send(@bottoneVerde, colour, white),
+    send(@bottoneVerde, pen, 0),
+    send(@dialog, display, @bottoneVerde, point(150,400)),
+    send(@bottoneVerde, recogniser, click_gesture(left, '', single,
+                 message(@prolog, colore_selezionato,@bottoneVerde, green))),
 
     Lista = [[@bottoneRosso, red],[@bottoneBlu, blue], [@bottoneVerde, green], [@bottoneGiallo, orange]],
     retractall(boxes_colori(_)),
@@ -178,78 +178,25 @@ cerca_colore(Bottone, [_|Rest], Bottone, Colore) :-
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
     file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
 
-wait_for_color_selection(NuovoColore) :-
-    writeln('porcodio'),
-    %bottone rosso
-    free(@bottoneRosso),
-    new(@bottoneRosso, box(70,40)),
-    send(@bottoneRosso, fill_pattern, colour(red)),
-    send(@bottoneRosso, radius, 10),
-    send(@bottoneRosso, colour, white),
-    send(@dialog, display, @bottoneRosso, point(70,350)),
-    send(@bottoneRosso, recogniser, click_gesture(left, '', single,
-                 message(@prolog,  colore_selezionato, red))),
-
-    %bottone blu
-    free(@bottoneBlu),
-    new(@bottoneBlu, box(70,40)),
-    send(@bottoneBlu, fill_pattern, colour(blue)),
-    send(@bottoneBlu, radius, 10),
-    send(@bottoneBlu, colour, white),
-    send(@dialog, display, @bottoneBlu, point(150,350)),
-    send(@bottoneBlu, recogniser, click_gesture(left, '', single,
-                 message(@prolog,  colore_selezionato, blue))),
-
-    %bottone giallo
-    free(@bottoneGiallo),
-    new(@bottoneGiallo, box(70,40)),
-    send(@bottoneGiallo, fill_pattern, colour(orange)),
-    send(@bottoneGiallo, radius, 10),
-    send(@bottoneGiallo, colour, white),
-    send(@dialog, display, @bottoneGiallo, point(70,400)),
-    send(@bottoneGiallo, recogniser, click_gesture(left, '', single,
-                 message(@prolog,  colore_selezionato, orange))),
-
-    %bottone verde
-    free(@bottoneVerde),
-    new(@bottoneVerde, box(70,40)),
-    send(@bottoneVerde, fill_pattern, colour(green)),
-    send(@bottoneVerde, radius, 10),
-    send(@bottoneVerde, colour, white),
-    send(@dialog, display, @bottoneVerde, point(150,400)),
-    send(@bottoneVerde, recogniser, click_gesture(left, '', single,
-                 message(@prolog, colore_selezionato, green))),
-
-    %Lista = [[@bottoneRosso, red],[@bottoneBlu, blue], [@bottoneVerde, green], [@bottoneGiallo, orange]],
-    %retractall(boxes_colori(_)),
-    %assertz(boxes_colori(Lista)),
-    %writeln(Lista),
-    retractall(turno_bloccato(_)),
-    assertz(turno_bloccato(si)),
-    controllo_colore_selezionato,
-    colore(NuovoColore).
-    %sleep(5).
-    %writeln(NuovoColore).
-
-
-colore_selezionato(Colore) :-
-    send(@bottoneRosso, destroy),
-    send(@bottoneBlu, destroy),
-    send(@bottoneGiallo, destroy),
-    send(@bottoneVerde, destroy),
+colore_selezionato(BoxColorato,NuovoColore) :-
+    writeln(BoxColorato),
+   send(BoxColorato, pen, 1),
+    writeln('Colore Selezionato'),
+    writeln(NuovoColore),
     retractall(turno_bloccato(_)),
     assertz(turno_bloccato(no)),
     retractall(colore(_)),
-    assertz(colore(Colore)).
+    assertz(colore(NuovoColore)),
+    boxes_colori(Lista),
+    elimina_bottoni_non_selezionati(Lista, NuovoColore).
 
-controllo_colore_selezionato :-
-    sleep(5),
-    colore(Colore),
+% Predicato per eliminare i bottoni non selezionati
+elimina_bottoni_non_selezionati([], _).
+elimina_bottoni_non_selezionati([[BoxColorato, Colore] | Rest], NuovoColore) :-
     (
-        Colore \= noColor
-        ->
-        writeln('colore scelto')
-        ;
-        writeln('non hai scelto colori'),
-        colore_selezionato(Colore)
-    ).
+     Colore \= NuovoColore
+     -> send(BoxColorato, pen, 0)
+     ;
+     true
+    ),
+    elimina_bottoni_non_selezionati(Rest, NuovoColore).
