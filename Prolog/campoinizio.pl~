@@ -191,7 +191,7 @@ win_condition :-
     %sfondo
     source_file(win_condition, File1),
     rimuovi_file_da_percorso(File1, Risultato1),
-    directory_file_path(Risultato1, '/Immagini/backgroundGameplay.jpg', NuovoPercorso1),
+    directory_file_path(Risultato1, '/Immagini/win.jpg', NuovoPercorso1),
     new(Imagefile3, image(NuovoPercorso1)),
     new(Bitmap1, bitmap(Imagefile3)),
     send(@device, display, Bitmap1),
@@ -212,17 +212,14 @@ win_condition :-
     %testo replay
     free(@testoReplay),
     new(@testoReplay, text('Replay')),
-    send(@testoReplay, font, font(helvetica, bold, 36)),
+    send(@testoReplay, font, font(helvetica, bold, 30)),
     send(@testoReplay, colour, colour(white)),
-    get(@testoUno, width, TestoWidth),
-    get(@testoUno, height, TestoHeight),
-    TestoX is 188 + (300 - TestoWidth) / 2,
+    get(@testoReplay, width, TestoWidth),
+    get(@testoReplay, height, TestoHeight),
+    TestoX is 200 + (300 - TestoWidth) / 2,
     TestoY is 400 + (75 - TestoHeight) / 2,
-    send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
+    send(@dialog, display, @testoReplay, point(TestoX, TestoY)).
 
-
-
-    true.
 
 loss_condition :-
     send(@device, clear),
@@ -233,15 +230,11 @@ loss_condition :-
     %sfondo
     source_file(win_condition, File1),
     rimuovi_file_da_percorso(File1, Risultato1),
-    directory_file_path(Risultato1, '/Immagini/backgroundGameplay.jpg', NuovoPercorso1),
+    directory_file_path(Risultato1, '/Immagini/loss.jpg', NuovoPercorso1),
     new(Imagefile3, image(NuovoPercorso1)),
     new(Bitmap1, bitmap(Imagefile3)),
     send(@device, display, Bitmap1),
     send(Bitmap1, center, @device?center),
-
-
-
-
 
     %box replay
     free(@bottoneReplay),
@@ -256,15 +249,13 @@ loss_condition :-
     %testo replay
     free(@testoReplay),
     new(@testoReplay, text('Replay')),
-    send(@testoReplay, font, font(helvetica, bold, 36)),
+    send(@testoReplay, font, font(helvetica, bold, 30)),
     send(@testoReplay, colour, colour(white)),
-    get(@testoUno, width, TestoWidth),
-    get(@testoUno, height, TestoHeight),
-    TestoX is 188 + (300 - TestoWidth) / 2,
+    get(@testoReplay, width, TestoWidth),
+    get(@testoReplay, height, TestoHeight),
+    TestoX is 200 + (300 - TestoWidth) / 2,
     TestoY is 400 + (75 - TestoHeight) / 2,
-    send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
-
-    true.
+    send(@dialog, display, @testoReplay, point(TestoX, TestoY)).
 
 
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-

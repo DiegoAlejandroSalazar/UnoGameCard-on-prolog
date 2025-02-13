@@ -19,37 +19,65 @@ start_game :-
     % inserisco l'immagine come sfondo
     source_file(start_game, File),
     rimuovi_file_da_percorso(File, Risultato),
-    directory_file_path(Risultato, '/Immagini/Sfondo.jpg', NuovoPercorso),
+    directory_file_path(Risultato, '/Immagini/schermatainiziale.jpg', NuovoPercorso),
     %free(@imagefile),
     new(@imagefile, image(NuovoPercorso)),
     new(Bitmap, bitmap(@imagefile)),
     send(@device, display, Bitmap),
     send(Bitmap, center, @device?center),
 
-    %bottone play
-    free(@playbutton),
-    new(@playbutton, button('Inizia Gioco', message(@prolog, start_the_game))),
-    send(@playbutton, size, size(450, 100)), % Imposta la dimensione del bottone
-    send(@playbutton, font, font(helvetica, bold, 30)), % Modifica il font del bottone
-    get(@playbutton, size,size(Pbw,_)),
-    get(@dialog, size, size(W,_)),
-    XPlaybutton is (W-Pbw)/2,
-    send(@dialog, display, @playbutton, point(XPlaybutton,500)),
 
-    %bottone regole
-    free(@rulesbutton),
-    new(@rulesbutton, button('Regole', message(@prolog, regole))),
-    send(@rulesbutton, size, size(200, 100)), % Imposta la dimensione del bottone
-    send(@rulesbutton, font, font(helvetica, bold, 30)), % Modifica il font del bottone
-    get(@rulesbutton,size,size(Rbw,_)),
-    XRulesbutton is (W-Rbw)/2,
-    send(@dialog, display, @rulesbutton, point(XRulesbutton,600)),
+    %box play
+    free(@bottonePlay),
+    new(@bottonePlay, box(300,75)),
+    send(@bottonePlay, fill_pattern, colour(black)),
+    send(@bottonePlay, radius, 10),
+    send(@bottonePlay, colour, white),
+    send(@dialog, display, @bottonePlay, point(200,350)),
+    send(@bottonePlay, recogniser, click_gesture(left, '', single,
+                 message(@prolog, start_the_game))),
+
+    %testo play
+    free(@testoPlay),
+    new(@testoPlay, text('Play')),
+    send(@testoPlay, font, font(helvetica, bold, 36)),
+    send(@testoPlay, colour, colour(white)),
+    get(@testoPlay, width, TestoWidth),
+    get(@testoPlay, height, TestoHeight),
+    TestoX is 200 + (300 - TestoWidth) / 2,
+    TestoY is 350 + (75 - TestoHeight) / 2,
+    send(@dialog, display, @testoPlay, point(TestoX, TestoY)),
+
+    %box regole
+    free(@bottoneRegole),
+    new(@bottoneRegole, box(300,75)),
+    send(@bottoneRegole, fill_pattern, colour(black)),
+    send(@bottoneRegole, radius, 10),
+    send(@bottoneRegole, colour, white),
+    send(@dialog, display, @bottoneRegole, point(200,400)),
+    send(@bottoneRegole, recogniser, click_gesture(left, '', single,
+                 message(@prolog, regole))),
+
+    %testo play
+    free(@testoRegole),
+    new(@testoRegole, text('Rules')),
+    send(@testoRegole, font, font(helvetica, bold, 36)),
+    send(@testoRegole, colour, colour(white)),
+    get(@testoRegole, width, TestoWidthR),
+    get(@testoRegole, height, TestoHeightR),
+    TestoRX is 200 + (300 - TestoWidthR) / 2,
+    TestoRY is 400 + (75 - TestoHeightR) / 2,
+    send(@dialog, display, @testoRegole, point(TestoRX, TestoRY)),
+
     send(@dialog, open).
+
 
 start_the_game :-
     send(@device, clear),
-    free(@playbutton),
-    free(@rulesbutton),
+    free(@bottonePlay),
+    free(@bottoneRegole),
+    free(@testoPlay),
+    free(@testoRegole),
 
     free(@device),
     new(@device, device),

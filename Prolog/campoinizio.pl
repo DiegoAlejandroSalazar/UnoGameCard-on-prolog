@@ -197,8 +197,6 @@ win_condition :-
     send(@device, display, Bitmap1),
     send(Bitmap1, center, @device?center),
 
-    %scritta  (incollare sopra sfondo)
-
     %box replay
     free(@bottoneReplay),
     new(@bottoneReplay, box(300,75)),
@@ -212,17 +210,14 @@ win_condition :-
     %testo replay
     free(@testoReplay),
     new(@testoReplay, text('Replay')),
-    send(@testoReplay, font, font(helvetica, bold, 36)),
+    send(@testoReplay, font, font(helvetica, bold, 30)),
     send(@testoReplay, colour, colour(white)),
-    get(@testoUno, width, TestoWidth),
-    get(@testoUno, height, TestoHeight),
-    TestoX is 188 + (300 - TestoWidth) / 2,
+    get(@testoReplay, width, TestoWidth),
+    get(@testoReplay, height, TestoHeight),
+    TestoX is 200 + (300 - TestoWidth) / 2,
     TestoY is 400 + (75 - TestoHeight) / 2,
-    send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
+    send(@dialog, display, @testoReplay, point(TestoX, TestoY)).
 
-
-
-    true.
 
 loss_condition :-
     send(@device, clear),
@@ -239,10 +234,6 @@ loss_condition :-
     send(@device, display, Bitmap1),
     send(Bitmap1, center, @device?center),
 
-
-
-
-
     %box replay
     free(@bottoneReplay),
     new(@bottoneReplay, box(300,75)),
@@ -256,15 +247,13 @@ loss_condition :-
     %testo replay
     free(@testoReplay),
     new(@testoReplay, text('Replay')),
-    send(@testoReplay, font, font(helvetica, bold, 36)),
+    send(@testoReplay, font, font(helvetica, bold, 30)),
     send(@testoReplay, colour, colour(white)),
-    get(@testoUno, width, TestoWidth),
-    get(@testoUno, height, TestoHeight),
-    TestoX is 188 + (300 - TestoWidth) / 2,
+    get(@testoReplay, width, TestoWidth),
+    get(@testoReplay, height, TestoHeight),
+    TestoX is 200 + (300 - TestoWidth) / 2,
     TestoY is 400 + (75 - TestoHeight) / 2,
-    send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
-
-    true.
+    send(@dialog, display, @testoReplay, point(TestoX, TestoY)).
 
 
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
