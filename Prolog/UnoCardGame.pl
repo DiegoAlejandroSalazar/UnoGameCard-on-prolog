@@ -252,24 +252,31 @@ scegli_colore_aux(_,ColoreScelto) :-
 cambia_colore(card(ValoreGiocato, ColoreScelto)) :-
     giocatore_attivo(Giocatore),
     mano_giocatore2(ManoGiocatore2),
-    colore(NuovoColore),
     (
         Giocatore = 1
         ->
-        colore(NuovoColore)
-        ;
-        colore_massimo(ManoGiocatore2,NuovoColore)
-    ),
-    carte_giocate(CarteGiocate),
+        colore(NuovoColore),
+        carte_giocate(CarteGiocate),
     % Crea una lista con solo la nuova carta e la appende alla nuova lista di carte giocate e poi aggiorna la variabile dinamica
-    CartaNuova = [card(ValoreGiocato,NuovoColore)],
-    CartaVecchia = [card(ValoreGiocato,ColoreScelto)], % dovuto mette una variabile perchè prolog va schifo
-    append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
-    append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
-    retractall(carte_giocate(_)),
-    assertz(carte_giocate(NuoveCarteGiocate)),
-    writeln('Colore cambiato con successo!').
-
+        CartaNuova = [card(ValoreGiocato,NuovoColore)],
+        CartaVecchia = [card(ValoreGiocato,ColoreScelto)], % dovuto mette una variabile perchè prolog va schifo
+        append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
+        append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
+        retractall(carte_giocate(_)),
+        assertz(carte_giocate(NuoveCarteGiocate)),
+        writeln('Colore cambiato con successo!')
+        ;
+        colore_massimo(ManoGiocatore2,NuovoColore2),
+        carte_giocate(CarteGiocate),
+    % Crea una lista con solo la nuova carta e la appende alla nuova lista di carte giocate e poi aggiorna la variabile dinamica
+        CartaNuova = [card(ValoreGiocato,NuovoColore2)],
+        CartaVecchia = [card(ValoreGiocato,ColoreScelto)], % dovuto mette una variabile perchè prolog va schifo
+        append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
+        append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
+        retractall(carte_giocate(_)),
+        assertz(carte_giocate(NuoveCarteGiocate)),
+        writeln('Colore cambiato con successo!')
+    ).
     % Funzione che attiva l'effetto della carta giocata.
 attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     giocatore_attivo(GiocatoreAttivo),
@@ -286,8 +293,9 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     ;   ValoreGiocato == +4 ->
         (   GiocatoreAttivo = 1 ->
             cambia_colore(card(ValoreGiocato, ColoreGiocato)),
+            %sleep(1),
             pesca_carte(4, 2),
-            sleep(1),
+            %sleep(1),
             writeln('IA pesca 4 carte ')
         ;
             cambia_colore(card(ValoreGiocato, ColoreGiocato)),
@@ -372,7 +380,7 @@ controllo_uno:-
     retractall(detto_uno(_)),
     assertz(detto_uno(no)).
 
-% Funzione che fa fare un azione al giocatore
+% Funzione che fa fare un'azione al giocatore
 gioca_carta(card(Valore,Colore)) :-
     carte_giocate(CarteGiocate),
     mano_giocatore1(ManoGiocatore1),
@@ -383,8 +391,8 @@ gioca_carta(card(Valore,Colore)) :-
     assertz(mano_giocatore1(NuovaMano)),
     retract(carte_giocate(CarteGiocate)),
     assertz(carte_giocate(NuoveCarteGiocate)),
-    crea_carta_giocata,
-    attiva_effetto(Carta).
+    attiva_effetto(Carta),
+    crea_carta_giocata.
 
 
 estrai_elementi([card(Valore, Colore), Peso], Valore, Colore, Peso).
@@ -491,13 +499,7 @@ colore_massimo(Mano, ColoreMassimo) :-
     Blu is Blue+Blue2,
     Gialli is Yellow+Yellow2,
     ConteggiFinali = [red-Rossi,green-Verdi,blue-Blu,yellow-Gialli],
-    %writeln(ConteggiFinali),
-    max_colore(ConteggiFinali,ColoreMassimo-_),
-   % writeln('ValoreMssimo scelto:'),
-   % writeln(ValoreMassimo),
-    writeln('Colore scelto:'),
-    writeln(ColoreMassimo).
-
+    max_colore(ConteggiFinali,ColoreMassimo-_).
 % Crea una lista di coppie Colore-Conteggio.
 mappa_carte_colore(_, [], []).
 mappa_carte_colore(Mano, [Colore|Resto], [Colore-Conteggio|Mappa]) :-
@@ -511,15 +513,11 @@ mappa_carte_colore(Mano, [Colore|Resto], [Colore-Conteggio|Mappa]) :-
 gioca_carta_ia :-
     controllo_uno,
     mano_giocatore2(ManoGiocatore2),
+    writeln(ManoGiocatore2),
     carte_giocate(Carte_Giocate),
-    %writeln('Carta al centro :'),
     carte_giocate([PrimaCarta|_]),
-    %writeln(PrimaCarta),
-    writeln(''),
-    %writeln('Mano IA: '),
-   % writeln('--------------------------------------------------------------------------'),
-   % writeln(ManoGiocatore2),
-   % writeln('--------------------------------------------------------------------------'),
+    writeln(PrimaCarta),
+    writeln('sto dentro gioca carta ia'),
         miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
         carta_da_giocare_ia(CartaGiocata),
         nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
@@ -532,15 +530,10 @@ gioca_carta_ia :-
         assertz(carte_giocate(NuoveCarteGiocate)),
         sleep(1),
         attiva_effetto(CartaGiocata),
-        crea_carta_giocata,
         writeln('IA ha giocato: '),
         writeln(''),
         writeln(CartaGiocata),
         writeln(''),
-       % writeln('Nuova Mano IA:'),
-       % writeln('--------------------------------------------------------------------------'),
-       % writeln(NuovaMano2),
-       % writeln('--------------------------------------------------------------------------'),
         retractall(carte_giocabili_ia(_)),
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
@@ -610,6 +603,7 @@ controllo_mazzo :-
     ;
     true
     ).
+
 % Controlla se le mani sono vuote e cambia la variabile dinamica
 % gioco_finito.
 controlla_vittoria :-
@@ -618,11 +612,13 @@ controlla_vittoria :-
     (   ManoGiocatore1 = []
     ->  writeln('Giocatore 1 ha vinto!'),
         retractall(gioco_finito(_)),
-        assertz(gioco_finito(si))
+        assertz(gioco_finito(si)),
+        win_condition
     ;   ManoGiocatore2 = []
     ->  writeln('Giocatore 2 (IA) ha vinto!'),
         retractall(gioco_finito(_)),
-        assertz(gioco_finito(si))
+        assertz(gioco_finito(si)),
+        loss_condition
     ;   true  % Nessun vincitore
     ).
 

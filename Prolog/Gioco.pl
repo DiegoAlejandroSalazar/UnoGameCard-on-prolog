@@ -19,7 +19,7 @@ start_game :-
     % inserisco l'immagine come sfondo
     source_file(start_game, File),
     rimuovi_file_da_percorso(File, Risultato),
-    directory_file_path(Risultato, '/Immagini/Sfondo.jpg', NuovoPercorso),
+    directory_file_path(Risultato, '/Immagini/schermatainiziale.jpg', NuovoPercorso),
     %free(@imagefile),
     new(@imagefile, image(NuovoPercorso)),
     new(Bitmap, bitmap(@imagefile)),
@@ -72,7 +72,6 @@ start_the_game :-
 setta_mano_giocatore:-
     rimuovi_tutte_carte,
     mano_giocatore1(ManoGiocatore1),
-    %writeln(ManoGiocatore1),
     length(ManoGiocatore1, IndiceMax),
     findall(Valori,
              member(card(Valori, _), ManoGiocatore1),
@@ -184,6 +183,8 @@ crea_carta_giocata :-
     Y is 350-105/2,
 
     carte_giocate([card(Valore,Colore) | _ ]),
+    writeln('pisello'),
+    writeln(card(Valore,Colore)),
     new(Carta, box(68,100)),
     rimuovi_suffisso_2(Colore,ColoreEffettivo),
     (   ColoreEffettivo = yellow
@@ -217,21 +218,29 @@ gestisci_click(Carta) :-
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
+    writeln('carta selezionata : '),
+    writeln(card(Valore,Colore)),
+    writeln('carta al centro : '),
+    writeln(PrimaCarta),
+
     (   GiocatoreAttivo = 1
         ->
                          (
                               carta_valida(card(Valore,Colore),PrimaCarta)
                               ->
                               gioca_carta(card(Valore,Colore)),
-                              crea_carta_giocata,
                               cerca_e_rimuovi_carta(Carta, ListaBox, NuovaListaBox),
                               retract(boxes_giocatore(_)),
                               assertz(boxes_giocatore(NuovaListaBox)),
                               setta_mano_giocatore,
                               retractall(giocatore_attivo(_)),
                               assertz(giocatore_attivo(2)),
+                              controlla_vittoria,
+                              crea_carta_giocata,
                               gioca_carta_ia,
-                              setta_mano_IA
+                              crea_carta_giocata,
+                              setta_mano_IA,
+                              controlla_vittoria
                               ;
                               writeln('carta non valida')
                           )
