@@ -542,15 +542,17 @@ gioca_carta_ia :-
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
         assertz(carta_da_giocare_ia(_)),
+        crea_carta_giocata,
+        setta_mano_IA,
+        controlla_vittoria,
         turno_bloccato(ControlloBloccoTurno),
         (    ControlloBloccoTurno = si
         ->
         retractall(turno_bloccato(_)),
         assertz(turno_bloccato(no)),
-             gioca_carta_ia,
-             crea_carta_giocata,
-             setta_mano_IA,
-             controlla_vittoria
+             gioca_carta_ia
+        ;
+        true
         ),
         retractall(giocatore_attivo(_)),
         assertz(giocatore_attivo(1)).

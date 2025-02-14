@@ -522,7 +522,6 @@ gioca_carta_ia :-
     carte_giocate(Carte_Giocate),
     carte_giocate([PrimaCarta|_]),
     writeln(PrimaCarta),
-    writeln('sto dentro gioca carta ia'),
         miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
         carta_da_giocare_ia(CartaGiocata),
         nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
@@ -552,6 +551,8 @@ gioca_carta_ia :-
              crea_carta_giocata,
              setta_mano_IA,
              controlla_vittoria
+        ;
+        true
         ),
         retractall(giocatore_attivo(_)),
         assertz(giocatore_attivo(1)).
