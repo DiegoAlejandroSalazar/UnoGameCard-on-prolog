@@ -153,10 +153,10 @@ inizializza_gioco :-
     assertz(mazzo(Mazzo)),
     % Richiamo distribuisci carte e modifico le mani e le carte giocati
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
-    Carta = [card(stop,red),card(stop,yellow)],
-    append(Carta,ManoGiocatore2,ManoGiocatore21),
+    %Carta = [card(stop,red),card(stop,yellow)],
+    %append(Carta,ManoGiocatore2,ManoGiocatore21),
     assertz(mano_giocatore1(ManoGiocatore1)),
-    assertz(mano_giocatore2(ManoGiocatore21)),
+    assertz(mano_giocatore2(ManoGiocatore2)),
     assertz(carte_giocate(Carte_Giocate)),
     assertz(carte_giocabili_ia([])),
     assertz(carta_da_giocare_ia([])),
@@ -516,6 +516,7 @@ mappa_carte_colore(Mano, [Colore|Resto], [Colore-Conteggio|Mappa]) :-
 % 2. modifica la mano e le carte giocate,
 % 3. se non puo giocare pesca una carta.
 gioca_carta_ia :-
+    non_mio_turno,
     controllo_uno,
     mano_giocatore2(ManoGiocatore2),
     writeln(ManoGiocatore2),
@@ -555,13 +556,15 @@ gioca_carta_ia :-
         true
         ),
         retractall(giocatore_attivo(_)),
-        assertz(giocatore_attivo(1)).
+        assertz(giocatore_attivo(1)),
+        mio_turno.
 
 gioca_carta_ia :-
     writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
     pesca_carte(1, 2),
     retractall(giocatore_attivo(_)),
-    assertz(giocatore_attivo(1)).
+    assertz(giocatore_attivo(1)),
+    mio_turno.
 
 
 % Mette la variabile giocatore_attivo a 1 e controlla se il gioco è

@@ -75,7 +75,7 @@ campo_inizio :-
 
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
     send(@cartamazzo, recogniser, click_gesture(left, '', single,
-                 message(@prolog, pesca_carte, 1, 1))),
+                 message(@prolog, bottone_pesca))),
 
     % Testo Carta Mazzo
     free(@testoMazzo),
@@ -158,7 +158,6 @@ campo_inizio :-
     retractall(boxes_colori(_)),
     assertz(boxes_colori(Lista)).
 
-
 colore_selezionato(BoxColorato,NuovoColore) :-
     send(BoxColorato, pen, 1),
     retractall(turno_bloccato(_)),
@@ -216,7 +215,9 @@ win_condition :-
     get(@testoReplay, height, TestoHeight),
     TestoX is 200 + (300 - TestoWidth) / 2,
     TestoY is 400 + (75 - TestoHeight) / 2,
-    send(@dialog, display, @testoReplay, point(TestoX, TestoY)).
+    send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
+
+    false.
 
 
 loss_condition :-
@@ -253,8 +254,27 @@ loss_condition :-
     get(@testoReplay, height, TestoHeight),
     TestoX is 200 + (300 - TestoWidth) / 2,
     TestoY is 400 + (75 - TestoHeight) / 2,
-    send(@dialog, display, @testoReplay, point(TestoX, TestoY)).
+    send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
+
+    false.
 
 
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
     file_directory_name(PercorsoCompleto, PercorsoSenzaFile).
+
+
+mio_turno :-
+    free(@testoTurnoIA),
+    free(@testoTurnoPL),
+    new(@testoTurnoPL, text('E\' il tuo turno!')),
+    send(@testoTurnoPL, font, font(helvetica, bold, 14)),
+    send(@testoTurnoPL, colour, white),
+    send(@dialog, display, @testoTurnoPL, point(298, 420)).
+non_mio_turno :-
+    free(@testoTurnoIA),
+    free(@testoTurnoPL),
+    new(@testoTurnoIA, text('Turno avversario!')),
+    send(@testoTurnoIA, font, font(helvetica, bold, 14)),
+    send(@testoTurnoIA, colour, white),
+    send(@dialog, display, @testoTurnoIA, point(295, 420)).
+

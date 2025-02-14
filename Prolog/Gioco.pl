@@ -92,6 +92,7 @@ start_the_game :-
     send(Bitmap, center, @device?center),
 
     campo_inizio,
+    mio_turno,
     inizializza_gioco,
 
     writeln('Il gioco è iniziato!').

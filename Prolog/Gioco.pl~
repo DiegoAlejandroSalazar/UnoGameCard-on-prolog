@@ -92,6 +92,7 @@ start_the_game :-
     send(Bitmap, center, @device?center),
 
     campo_inizio,
+    mio_turno,
     inizializza_gioco,
 
     writeln('Il gioco è iniziato!').
@@ -239,6 +240,7 @@ crea_carta_giocata :-
 
 
 gestisci_click(Carta) :-
+    mio_turno,
     giocatore_attivo(GiocatoreAttivo),
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
@@ -262,10 +264,10 @@ gestisci_click(Carta) :-
                               crea_carta_giocata,
                               (   Valore \= stop
                               ->
-                              gioca_carta_ia,
-                              crea_carta_giocata,
-                              setta_mano_IA,
-                              controlla_vittoria
+                              gioca_carta_ia
+                              %crea_carta_giocata,
+                              %setta_mano_IA,
+                              %controlla_vittoria
                               ;
                               writeln('turno ia bloccato'),
                               retractall(giocatore_attivo(_)),
