@@ -262,10 +262,10 @@ gestisci_click(Carta) :-
                               crea_carta_giocata,
                               (   Valore \= stop
                               ->
-                              gioca_carta_ia,
-                              crea_carta_giocata,
-                              setta_mano_IA,
-                              controlla_vittoria
+                              gioca_carta_ia
+                              %crea_carta_giocata,
+                              %setta_mano_IA,
+                              %controlla_vittoria
                               ;
                               writeln('turno ia bloccato'),
                               retractall(giocatore_attivo(_)),

@@ -270,7 +270,6 @@ gestisci_click(Carta) :-
                               writeln('turno ia bloccato'),
                               retractall(giocatore_attivo(_)),
                               assertz(giocatore_attivo(1))
-
                               )
                               ;
                               writeln('carta non valida')
