@@ -39,7 +39,7 @@ start_game :-
 
     %testo play
     free(@testoPlay),
-    new(@testoPlay, text('Play')),
+    new(@testoPlay, text('Gioca')),
     send(@testoPlay, font, font(helvetica, bold, 36)),
     send(@testoPlay, colour, colour(white)),
     get(@testoPlay, width, TestoWidth),
@@ -60,7 +60,7 @@ start_game :-
 
     %testo play
     free(@testoRegole),
-    new(@testoRegole, text('Rules')),
+    new(@testoRegole, text('Regole')),
     send(@testoRegole, font, font(helvetica, bold, 36)),
     send(@testoRegole, colour, colour(white)),
     get(@testoRegole, width, TestoWidthR),
@@ -202,8 +202,7 @@ crea_carte(Valore, Colore, X, Y) :-
     append([Box],ListaBox,NuovaListaBox),
     retract(boxes_giocatore(_)),
     assertz(boxes_giocatore(NuovaListaBox)).
-    %writeln(''),
-    %writeln(NuovaListaBox).
+
 
 
 crea_carta_giocata :-
@@ -211,8 +210,6 @@ crea_carta_giocata :-
     Y is 350-105/2,
 
     carte_giocate([card(Valore,Colore) | _ ]),
-    writeln('pisello'),
-    writeln(card(Valore,Colore)),
     new(Carta, box(68,100)),
     rimuovi_suffisso_2(Colore,ColoreEffettivo),
     (   ColoreEffettivo = yellow
@@ -246,8 +243,6 @@ gestisci_click(Carta) :-
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
-    writeln('carta selezionata : '),
-    writeln(card(Valore,Colore)),
     writeln('carta al centro : '),
     writeln(PrimaCarta),
 
@@ -265,10 +260,17 @@ gestisci_click(Carta) :-
                               assertz(giocatore_attivo(2)),
                               controlla_vittoria,
                               crea_carta_giocata,
+                              (   Valore \= stop
+                              ->
                               gioca_carta_ia,
                               crea_carta_giocata,
                               setta_mano_IA,
                               controlla_vittoria
+                              ;
+                              writeln('turno ia bloccato'),
+                              retractall(giocatore_attivo(_)),
+                              assertz(giocatore_attivo(1))
+                              )
                               ;
                               writeln('carta non valida')
                           )

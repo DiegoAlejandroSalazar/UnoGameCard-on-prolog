@@ -197,8 +197,6 @@ win_condition :-
     send(@device, display, Bitmap1),
     send(Bitmap1, center, @device?center),
 
-    %scritta  (incollare sopra sfondo)
-
     %box replay
     free(@bottoneReplay),
     new(@bottoneReplay, box(300,75)),

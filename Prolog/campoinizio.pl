@@ -75,7 +75,7 @@ campo_inizio :-
 
     send(@dialog, display, @cartamazzo, point(PositionXmazzo,PositionYmazzo)),
     send(@cartamazzo, recogniser, click_gesture(left, '', single,
-                 message(@prolog, pesca_carte, 1, 1))),
+                 message(@prolog, bottone_pesca))),
 
     % Testo Carta Mazzo
     free(@testoMazzo),

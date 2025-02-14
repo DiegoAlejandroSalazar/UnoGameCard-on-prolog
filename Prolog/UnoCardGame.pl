@@ -153,8 +153,10 @@ inizializza_gioco :-
     assertz(mazzo(Mazzo)),
     % Richiamo distribuisci carte e modifico le mani e le carte giocati
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
+    Carta = [card(stop,red),card(stop,yellow)],
+    append(Carta,ManoGiocatore2,ManoGiocatore21),
     assertz(mano_giocatore1(ManoGiocatore1)),
-    assertz(mano_giocatore2(ManoGiocatore2)),
+    assertz(mano_giocatore2(ManoGiocatore21)),
     assertz(carte_giocate(Carte_Giocate)),
     assertz(carte_giocabili_ia([])),
     assertz(carta_da_giocare_ia([])),
@@ -293,9 +295,7 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     ;   ValoreGiocato == +4 ->
         (   GiocatoreAttivo = 1 ->
             cambia_colore(card(ValoreGiocato, ColoreGiocato)),
-            %sleep(1),
             pesca_carte(4, 2),
-            %sleep(1),
             writeln('IA pesca 4 carte ')
         ;
             cambia_colore(card(ValoreGiocato, ColoreGiocato)),
@@ -342,9 +342,14 @@ pesca_carte(N,P) :-
         assertz(mano_giocatore1(NuovaMano)),
         setta_mano_giocatore
     ).
-
-bottone_pesca:-
-    pesca_carte(1,1).
+bottone_pesca :-
+    retractall(giocatore_attivo(_)),
+    assertz(giocatore_attivo(2)),
+    pesca_carte(1,1),
+    gioca_carta_ia,
+    crea_carta_giocata,
+    setta_mano_IA,
+    controlla_vittoria.
 
 % Funzione che cambia il valore della variabile dinamica.
 bottone_uno :-
@@ -517,7 +522,6 @@ gioca_carta_ia :-
     carte_giocate(Carte_Giocate),
     carte_giocate([PrimaCarta|_]),
     writeln(PrimaCarta),
-    writeln('sto dentro gioca carta ia'),
         miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
         carta_da_giocare_ia(CartaGiocata),
         nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
@@ -538,18 +542,22 @@ gioca_carta_ia :-
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
         assertz(carta_da_giocare_ia(_)),
+        turno_bloccato(ControlloBloccoTurno),
+        (    ControlloBloccoTurno = si
+        ->
+        retractall(turno_bloccato(_)),
+        assertz(turno_bloccato(no)),
+             gioca_carta_ia,
+             crea_carta_giocata,
+             setta_mano_IA,
+             controlla_vittoria
+        ),
         retractall(giocatore_attivo(_)),
         assertz(giocatore_attivo(1)).
 
 gioca_carta_ia :-
     writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
     pesca_carte(1, 2),
-    %mano_giocatore2(ManoGiocatore2),
-    writeln(''),
-   % writeln('Mano IA: '),
-   % writeln('--------------------------------------------------------------------------'),
-    %writeln(ManoGiocatore2),
-   % writeln('--------------------------------------------------------------------------'),
     retractall(giocatore_attivo(_)),
     assertz(giocatore_attivo(1)).
 
