@@ -146,15 +146,12 @@ inizializza_gioco :-
     retractall(gioco_finito(_)),
     retractall(boxes_giocatore(_)),
     retractall(boxes_giocatore2(_)),
-    %retractall(boxes_colori(_)),
     retractall(colore(_)),
     lista_carte_randomizzata(Mazzo),
     % Metto dentro mazzo il mazzo randomizzato
     assertz(mazzo(Mazzo)),
     % Richiamo distribuisci carte e modifico le mani e le carte giocati
     distribuisci_carte(ManoGiocatore1,ManoGiocatore2,Carte_Giocate),
-    %Carta = [card(stop,red),card(stop,yellow)],
-    %append(Carta,ManoGiocatore2,ManoGiocatore21),
     assertz(mano_giocatore1(ManoGiocatore1)),
     assertz(mano_giocatore2(ManoGiocatore2)),
     assertz(carte_giocate(Carte_Giocate)),
@@ -265,8 +262,7 @@ cambia_colore(card(ValoreGiocato, ColoreScelto)) :-
         append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
         append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
         retractall(carte_giocate(_)),
-        assertz(carte_giocate(NuoveCarteGiocate)),
-        writeln('Colore cambiato con successo!')
+        assertz(carte_giocate(NuoveCarteGiocate))
         ;
         colore_massimo(ManoGiocatore2,NuovoColore2),
         carte_giocate(CarteGiocate),
@@ -276,31 +272,24 @@ cambia_colore(card(ValoreGiocato, ColoreScelto)) :-
         append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
         append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
         retractall(carte_giocate(_)),
-        assertz(carte_giocate(NuoveCarteGiocate)),
-        writeln('Colore cambiato con successo!')
+        assertz(carte_giocate(NuoveCarteGiocate))
     ).
     % Funzione che attiva l'effetto della carta giocata.
 attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
     giocatore_attivo(GiocatoreAttivo),
     (   ValoreGiocato == +2 ->
         (   GiocatoreAttivo = 1 ->
-            writeln('IA pesca 2 carte'),
-            writeln(''),
             pesca_carte(2, 2)
         ;
-            writeln('+2 carte pescate'),
-            writeln(''),
             pesca_carte(2, 1)
         )
     ;   ValoreGiocato == +4 ->
         (   GiocatoreAttivo = 1 ->
             cambia_colore(card(ValoreGiocato, ColoreGiocato)),
-            pesca_carte(4, 2),
-            writeln('IA pesca 4 carte ')
+            pesca_carte(4, 2)
         ;
             cambia_colore(card(ValoreGiocato, ColoreGiocato)),
-            pesca_carte(4, 1),
-            writeln('+4 carte pescate')
+            pesca_carte(4, 1)
         )
     ;   ValoreGiocato == stop ->
         (   retractall(turno_bloccato(_)),
@@ -308,16 +297,12 @@ attiva_effetto(card(ValoreGiocato, ColoreGiocato)) :-
         )
     ;   ValoreGiocato == cambio ->
         (   GiocatoreAttivo = 1 ->
-            cambia_colore(card(ValoreGiocato, ColoreGiocato)),
-            writeln('Cambio Colore!'),
-            writeln('')
+            cambia_colore(card(ValoreGiocato, ColoreGiocato))
         ;
-            cambia_colore(card(ValoreGiocato, ColoreGiocato)),
-            writeln('IA fa cambio colore'),
-            writeln('')
+            cambia_colore(card(ValoreGiocato, ColoreGiocato))
         )
-    ;   writeln('carta numero giocata'),
-        writeln('')
+    ;
+    true
     ).
 % Pesca una carta dal mazzo e la mette nella mano N = numero carte da
 % pescare, P = player che pescherà le carte.
@@ -379,7 +364,6 @@ controllo_uno:-
             pesca_carte(2,1)
         ;
         writeln('')
-       % writeln('tutto apposto non hai detto uno senza motivo')
         )
     ),
     retractall(detto_uno(_)),
@@ -519,10 +503,8 @@ gioca_carta_ia :-
     non_mio_turno,
     controllo_uno,
     mano_giocatore2(ManoGiocatore2),
-    writeln(ManoGiocatore2),
     carte_giocate(Carte_Giocate),
     carte_giocate([PrimaCarta|_]),
-    writeln(PrimaCarta),
         miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
         carta_da_giocare_ia(CartaGiocata),
         nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
@@ -535,10 +517,6 @@ gioca_carta_ia :-
         assertz(carte_giocate(NuoveCarteGiocate)),
         sleep(1),
         attiva_effetto(CartaGiocata),
-        writeln('IA ha giocato: '),
-        writeln(''),
-        writeln(CartaGiocata),
-        writeln(''),
         retractall(carte_giocabili_ia(_)),
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
@@ -560,7 +538,6 @@ gioca_carta_ia :-
         mio_turno.
 
 gioca_carta_ia :-
-    writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
     pesca_carte(1, 2),
     retractall(giocatore_attivo(_)),
     assertz(giocatore_attivo(1)),
@@ -576,12 +553,11 @@ turno_giocatore :-
     (   gioco_finito(si)
     ->  true
     ;   turno_bloccato(si)
-    ->  writeln('Il tuo turno è bloccato!'),
+    ->
         retractall(turno_bloccato(_)),
         assertz(turno_bloccato(no)),
         turno_ia
-    ;   writeln('Il tuo turno!'),
-        %gioca_carta,
+    ;
         controlla_vittoria,
         controllo_mazzo,
         turno_ia
@@ -607,7 +583,6 @@ turno_giocatore :-
 controllo_mazzo :-
     mazzo(Mazzo),
     length(Mazzo,LunghezzaMazzo),
-   % writeln(LunghezzaMazzo),
     (   LunghezzaMazzo < 1
     ->
     lista_carte_randomizzata(NuovoMazzo),

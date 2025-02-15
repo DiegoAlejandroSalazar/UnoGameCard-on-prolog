@@ -8,7 +8,6 @@ start_game :-
 
     new(@dialog, dialog('Uno e mezzo')),
     send(@dialog, size, size(700,700)),
-    %send(@dialog, done_message, message(@prolog, esci_dal_gioco)),
     send(@dialog, background, white),
 
      % Device.
@@ -20,7 +19,6 @@ start_game :-
     source_file(start_game, File),
     rimuovi_file_da_percorso(File, Risultato),
     directory_file_path(Risultato, '/Immagini/schermatainiziale.jpg', NuovoPercorso),
-    %free(@imagefile),
     new(@imagefile, image(NuovoPercorso)),
     new(Bitmap, bitmap(@imagefile)),
     send(@device, display, Bitmap),
@@ -90,12 +88,9 @@ start_the_game :-
     new(Bitmap, bitmap(@imagefile2)),
     send(@device, display, Bitmap),
     send(Bitmap, center, @device?center),
-
     campo_inizio,
     mio_turno,
-    inizializza_gioco,
-
-    writeln('Il gioco è iniziato!').
+    inizializza_gioco.
 
 
 setta_mano_giocatore:-
@@ -244,8 +239,6 @@ gestisci_click(Carta) :-
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
-    writeln('carta al centro : '),
-    writeln(PrimaCarta),
 
     (   GiocatoreAttivo = 1
         ->
@@ -264,11 +257,7 @@ gestisci_click(Carta) :-
                               (   Valore \= stop
                               ->
                               gioca_carta_ia
-                              %crea_carta_giocata,
-                              %setta_mano_IA,
-                              %controlla_vittoria
                               ;
-                              writeln('turno ia bloccato'),
                               retractall(giocatore_attivo(_)),
                               assertz(giocatore_attivo(1))
                               )
@@ -280,18 +269,12 @@ gestisci_click(Carta) :-
     ).
 
 % Cerca la carta cliccata all'interno della lista
-cerca_carta(CartaCliccata, [[CartaCliccata, _Testo, Valore, Colore]|_],Valore,Colore) :-
-    %writeln('Carta trovata: '),
-    %format('Carta: ~w, Testo: ~w, Valore: ~w, Colore: ~w~n', [CartaCliccata, Testo, Valore, Colore]),
-    !.
+cerca_carta(CartaCliccata, [[CartaCliccata, _Testo, Valore, Colore]|_],Valore,Colore) :- !.
 
 cerca_carta(CartaCliccata, [_|Rest],Valore,Colore) :-
     cerca_carta(CartaCliccata, Rest,Valore,Colore).
 
 cerca_e_rimuovi_carta(CartaCliccata, [[CartaCliccata, Testo, _Valore, _Colore]|Rest], Rest) :-
-    %writeln('Carta trovata e rimossa: '),
-    %format('Carta: ~w, Testo: ~w, Valore: ~w, Colore: ~w~n', [CartaCliccata, Testo, Valore, Colore]),
-    % Libera (rimuove) gli elementi grafici
     free(CartaCliccata),
     free(Testo), !.
 
@@ -301,15 +284,11 @@ cerca_e_rimuovi_carta(CartaCliccata, [Altro|Rest], [Altro|NuovoRest]) :-
     % Predicato per rimuovere tutte le carte
 rimuovi_tutte_carte :-
     boxes_giocatore(ListaBox),
-    %writeln('Rimuovendo tutte le carte...'),
     retract(boxes_giocatore(_)), % Rimuove la lista corrente
     assertz(boxes_giocatore([])), % Imposta una nuova lista vuota
     rimuovi_tutte_carte_lista(ListaBox).
 
-rimuovi_tutte_carte_lista([]) :-
-    %writeln('Tutte le carte sono state rimosse.').
-    writeln('').
-
+rimuovi_tutte_carte_lista([]).
 
 rimuovi_tutte_carte_lista([[Carta, Testo, _, _] | Rest]) :-
     free(Carta), % Libera (rimuove) la carta dalla finestra grafica
@@ -318,18 +297,13 @@ rimuovi_tutte_carte_lista([[Carta, Testo, _, _] | Rest]) :-
 
 rimuovi_tutte_carte_ia :-
     boxes_giocatore2(ListaBox2),
-    %writeln('Rimuovendo tutte le carte...'),
     retract(boxes_giocatore2(_)), % Rimuove la lista corrente
     assertz(boxes_giocatore2([])), % Imposta una nuova lista vuota
     rimuovi_tutte_carte_lista_Ia(ListaBox2).
 
 
 % Predicato per rimuovere tutte le carte dalla lista
-
-rimuovi_tutte_carte_lista_Ia([]) :-
-    %writeln('Tutte le carte ia sono state rimosse.').
-    writeln('').
-
+rimuovi_tutte_carte_lista_Ia([]).
 
 rimuovi_tutte_carte_lista_Ia([Carta| Rest]) :- % per le carte generiche
     free(Carta), % Libera (rimuove) la carta dalla finestra grafica
