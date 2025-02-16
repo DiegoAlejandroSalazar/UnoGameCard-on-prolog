@@ -269,12 +269,12 @@ mio_turno :-
     new(@testoTurnoPL, text('E\' il tuo turno!')),
     send(@testoTurnoPL, font, font(helvetica, bold, 14)),
     send(@testoTurnoPL, colour, white),
-    send(@dialog, display, @testoTurnoPL, point(298, 420)).
+    send(@dialog, display, @testoTurnoPL, point(296, 420)).
 non_mio_turno :-
     free(@testoTurnoIA),
     free(@testoTurnoPL),
     new(@testoTurnoIA, text('Turno avversario!')),
     send(@testoTurnoIA, font, font(helvetica, bold, 14)),
     send(@testoTurnoIA, colour, white),
-    send(@dialog, display, @testoTurnoIA, point(285, 420)).
+    send(@dialog, display, @testoTurnoIA, point(284, 420)).
 

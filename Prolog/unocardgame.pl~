@@ -1,5 +1,3 @@
-:- [gioco].
-
 % Definizione carte
 card(1,red).
 card(2, red).
@@ -364,7 +362,6 @@ controllo_uno:-
             pesca_carte(2,1)
         ;
         writeln('')
-       % writeln('tutto apposto non hai detto uno senza motivo')
         )
     ),
     retractall(detto_uno(_)),
@@ -504,10 +501,8 @@ gioca_carta_ia :-
     non_mio_turno,
     controllo_uno,
     mano_giocatore2(ManoGiocatore2),
-    writeln(ManoGiocatore2),
     carte_giocate(Carte_Giocate),
     carte_giocate([PrimaCarta|_]),
-    writeln(PrimaCarta),
         miglior_carta_da_giocare_aux(Carte_Giocate, ManoGiocatore2, _),
         carta_da_giocare_ia(CartaGiocata),
         nonvar(CartaGiocata), % controllo che la carta esite altrimenti esce
@@ -520,15 +515,13 @@ gioca_carta_ia :-
         assertz(carte_giocate(NuoveCarteGiocate)),
         sleep(1),
         attiva_effetto(CartaGiocata),
-        writeln('IA ha giocato: '),
-        writeln(''),
-        writeln(CartaGiocata),
-        writeln(''),
         retractall(carte_giocabili_ia(_)),
         assertz(carte_giocabili_ia([])),
         retract(carta_da_giocare_ia(CartaGiocata)),
         assertz(carta_da_giocare_ia(_)),
+        controlla_vittoria,
         crea_carta_giocata,
+        controlla_vittoria,
         setta_mano_IA,
         controlla_vittoria,
         turno_bloccato(ControlloBloccoTurno),
@@ -545,7 +538,6 @@ gioca_carta_ia :-
         mio_turno.
 
 gioca_carta_ia :-
-    writeln('L\'IA non ha una carta valida da giocare, pesca una carta.'),
     pesca_carte(1, 2),
     retractall(giocatore_attivo(_)),
     assertz(giocatore_attivo(1)),
@@ -561,12 +553,11 @@ turno_giocatore :-
     (   gioco_finito(si)
     ->  true
     ;   turno_bloccato(si)
-    ->  writeln('Il tuo turno è bloccato!'),
+    ->
         retractall(turno_bloccato(_)),
         assertz(turno_bloccato(no)),
         turno_ia
-    ;   writeln('Il tuo turno!'),
-        %gioca_carta,
+    ;
         controlla_vittoria,
         controllo_mazzo,
         turno_ia
@@ -592,7 +583,6 @@ turno_giocatore :-
 controllo_mazzo :-
     mazzo(Mazzo),
     length(Mazzo,LunghezzaMazzo),
-   % writeln(LunghezzaMazzo),
     (   LunghezzaMazzo < 1
     ->
     lista_carte_randomizzata(NuovoMazzo),

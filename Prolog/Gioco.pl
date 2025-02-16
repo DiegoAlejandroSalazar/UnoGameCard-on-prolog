@@ -1,4 +1,5 @@
 :-use_module(library(pce)).
+:- [unocardgame].
 :- [campoinizio].
 :- [regole].
 

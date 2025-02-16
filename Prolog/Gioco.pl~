@@ -91,7 +91,6 @@ start_the_game :-
     campo_inizio,
     mio_turno,
     inizializza_gioco.
-    %writeln('Il gioco è iniziato!').
 
 
 setta_mano_giocatore:-
@@ -240,8 +239,6 @@ gestisci_click(Carta) :-
     boxes_giocatore(ListaBox),
     carte_giocate([PrimaCarta|_]),
     cerca_carta(Carta, ListaBox,Valore,Colore),
-    writeln('carta al centro : '),
-    writeln(PrimaCarta),
 
     (   GiocatoreAttivo = 1
         ->
@@ -261,7 +258,6 @@ gestisci_click(Carta) :-
                               ->
                               gioca_carta_ia
                               ;
-                              writeln('turno ia bloccato'),
                               retractall(giocatore_attivo(_)),
                               assertz(giocatore_attivo(1))
                               )

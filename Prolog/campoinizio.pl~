@@ -256,7 +256,12 @@ loss_condition :-
     TestoY is 400 + (75 - TestoHeight) / 2,
     send(@dialog, display, @testoReplay, point(TestoX, TestoY)),
 
-    false.
+    free(@testoTurnoPL),
+    free(@testoTurnoIA),
+    rimuovi_tutte_carte,
+    rimuovi_tutte_carte_ia,
+
+    true.
 
 
 rimuovi_file_da_percorso(PercorsoCompleto, PercorsoSenzaFile) :-
@@ -269,12 +274,12 @@ mio_turno :-
     new(@testoTurnoPL, text('E\' il tuo turno!')),
     send(@testoTurnoPL, font, font(helvetica, bold, 14)),
     send(@testoTurnoPL, colour, white),
-    send(@dialog, display, @testoTurnoPL, point(298, 420)).
+    send(@dialog, display, @testoTurnoPL, point(296, 420)).
 non_mio_turno :-
     free(@testoTurnoIA),
     free(@testoTurnoPL),
     new(@testoTurnoIA, text('Turno avversario!')),
     send(@testoTurnoIA, font, font(helvetica, bold, 14)),
     send(@testoTurnoIA, colour, white),
-    send(@dialog, display, @testoTurnoIA, point(295, 420)).
+    send(@dialog, display, @testoTurnoIA, point(284, 420)).
 

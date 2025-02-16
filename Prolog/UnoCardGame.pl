@@ -1,5 +1,3 @@
-:- [gioco].
-
 % Definizione carte
 card(1,red).
 card(2, red).
