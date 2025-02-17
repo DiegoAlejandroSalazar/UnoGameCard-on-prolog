@@ -266,7 +266,7 @@ cambia_colore(card(ValoreGiocato, ColoreScelto)) :-
         carte_giocate(CarteGiocate),
     % Crea una lista con solo la nuova carta e la appende alla nuova lista di carte giocate e poi aggiorna la variabile dinamica
         CartaNuova = [card(ValoreGiocato,NuovoColore2)],
-        CartaVecchia = [card(ValoreGiocato,ColoreScelto)], % dovuto mette una variabile perchè prolog va schifo
+        CartaVecchia = [card(ValoreGiocato,ColoreScelto)],
         append(CartaVecchia,CarteSenzaCambio,CarteGiocate), % per levare la vecchia cambiocolore
         append(CartaNuova,CarteSenzaCambio,NuoveCarteGiocate),
         retractall(carte_giocate(_)),
